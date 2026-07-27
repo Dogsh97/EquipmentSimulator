@@ -67,3 +67,26 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Visual Studio
+.vs/
+**/.vs/
+
+# Build output
+Debug/
+Release/
+x64/
+**/Debug/
+**/Release/
+**/x64/
+
+# User-specific Visual Studio files
+*.user
+*.suo
+
+# Build artifacts
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.log
