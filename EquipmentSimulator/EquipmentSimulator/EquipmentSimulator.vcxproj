@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClCompile Include="EquipmentController.cpp" />
     <ClCompile Include="EquipmentSimulator.cpp" />
+    <ClCompile Include="Wafer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EquipmentController.h" />
+    <ClInclude Include="Wafer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
