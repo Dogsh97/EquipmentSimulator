@@ -11,6 +11,8 @@ int main()
 	equipment.PrintState();
 	equipment.CompleteInitialization();
 	equipment.PrintState();
+	equipment.LoadWafer(1001);
+	equipment.PrintState();
 	equipment.Start();
 	equipment.PrintState();
 	equipment.Complete();
