@@ -139,12 +139,16 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Alarm.cpp" />
     <ClCompile Include="EquipmentController.cpp" />
     <ClCompile Include="EquipmentSimulator.cpp" />
+    <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="Wafer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Alarm.h" />
     <ClInclude Include="EquipmentController.h" />
+    <ClInclude Include="Sensor.h" />
     <ClInclude Include="Wafer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
