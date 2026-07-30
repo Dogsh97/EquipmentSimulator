@@ -1,6 +1,7 @@
 #pragma once
 #include "Wafer.h"
 #include "Sensor.h"
+#include "Alarm.h"
 
 enum class EquipmentState{
 	IDLE,
@@ -16,6 +17,7 @@ private:
 	EquipmentState currentState;
 	Wafer wafer;
 	Sensor Sensor;
+	AlarmManager AlarmManager;
 
 public:
 	EquipmentController();

@@ -24,12 +24,24 @@
     <ClCompile Include="Wafer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Sensor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Alarm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EquipmentController.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Wafer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Sensor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Alarm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

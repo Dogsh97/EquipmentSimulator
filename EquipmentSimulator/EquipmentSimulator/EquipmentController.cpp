@@ -30,19 +30,31 @@ void EquipmentController::LoadWafer(int id) {
 		wafer.Load(id);
 		Sensor.DetectWafer();
 		currentState = EquipmentState::Loading;
+		AlarmManager.ClearAlarm();
 	}
 	else {
 		std::cout << "[ERROR] LoadWafer command rejected.\n";
+		AlarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
+		AlarmManager.PrintAlarm();
 	}
 }
 
 void EquipmentController::Start() {
-	if (currentState == EquipmentState::Loading && Sensor.IsDetected()) {
-		currentState = EquipmentState::RUNNING;
-		wafer.StartProcessing();
+	if (Sensor.IsDetected()) {
+		if (currentState == EquipmentState::Loading) {
+			currentState = EquipmentState::RUNNING;
+			wafer.StartProcessing();
+			AlarmManager.ClearAlarm();
+		}
+		else {
+			std::cout << "[ERROR] Start command rejected.\n";
+			AlarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
+			AlarmManager.PrintAlarm();
+		}
 	}
 	else {
-		std::cout << "[ERROR] Start command rejected.\n";
+		AlarmManager.RaiseAlarm(AlarmCode::WAFER_NOT_DETECTED);
+		AlarmManager.PrintAlarm();
 	}
 }
 
@@ -60,6 +72,8 @@ void EquipmentController::Complete() {
 void EquipmentController::RaiseError() {
 	if (currentState == EquipmentState::RUNNING) {
 		currentState = EquipmentState::ERROR;
+		AlarmManager.RaiseAlarm(AlarmCode::PROCESS_ALREADY_RUNNING);
+		AlarmManager.PrintAlarm();
 	}
 	else {
 		std::cout << "[ERROR] RaiseError command rejected.\n";
@@ -80,31 +94,37 @@ void EquipmentController::PrintState() {
 		case EquipmentState::IDLE:
 			wafer.PrintInfo();
 			Sensor.PrintStatus();
+			AlarmManager.PrintAlarm();
 			std::cout << "IDLE\n";
 			break;
 		case EquipmentState::INITIALIZING:
 			wafer.PrintInfo();
 			Sensor.PrintStatus();
+			AlarmManager.PrintAlarm();
 			std::cout << "INITIALIZING\n";
 			break;
 		case EquipmentState::Loading:
 			wafer.PrintInfo();
 			Sensor.PrintStatus();
+			AlarmManager.PrintAlarm();
 			std::cout << "Loading\n";
 			break;
 		case EquipmentState::READY:
 			wafer.PrintInfo();
 			Sensor.PrintStatus();
+			AlarmManager.PrintAlarm();
 			std::cout << "READY\n";
 			break;
 		case EquipmentState::RUNNING :
 			wafer.PrintInfo();
 			Sensor.PrintStatus();
+			AlarmManager.PrintAlarm();
 			std::cout << "RUNNING\n";
 			break;
 		case EquipmentState::ERROR:
 			wafer.PrintInfo();
 			Sensor.PrintStatus();
+			AlarmManager.PrintAlarm();
 			std::cout << "ERROR\n";
 			break;
 	}
