@@ -28,6 +28,7 @@ void EquipmentController::CompleteInitialization() {
 void EquipmentController::LoadWafer(int id) {
 	if (currentState == EquipmentState::READY) {
 		wafer.Load(id);
+		Sensor.DetectWafer();
 		currentState = EquipmentState::Loading;
 	}
 	else {
@@ -36,7 +37,7 @@ void EquipmentController::LoadWafer(int id) {
 }
 
 void EquipmentController::Start() {
-	if (currentState == EquipmentState::Loading) {
+	if (currentState == EquipmentState::Loading && Sensor.IsDetected()) {
 		currentState = EquipmentState::RUNNING;
 		wafer.StartProcessing();
 	}
@@ -49,6 +50,7 @@ void EquipmentController::Complete() {
 	if (currentState == EquipmentState::RUNNING) {
 		currentState = EquipmentState::READY;
 		wafer.CompleteProcess();
+		Sensor.RemoveWafer();
 	}
 	else {
 		std::cout << "[ERROR] Complete command rejected.\n";
@@ -77,26 +79,32 @@ void EquipmentController::PrintState() {
 	switch (currentState) {
 		case EquipmentState::IDLE:
 			wafer.PrintInfo();
+			Sensor.PrintStatus();
 			std::cout << "IDLE\n";
 			break;
 		case EquipmentState::INITIALIZING:
 			wafer.PrintInfo();
+			Sensor.PrintStatus();
 			std::cout << "INITIALIZING\n";
 			break;
 		case EquipmentState::Loading:
 			wafer.PrintInfo();
+			Sensor.PrintStatus();
 			std::cout << "Loading\n";
 			break;
 		case EquipmentState::READY:
 			wafer.PrintInfo();
+			Sensor.PrintStatus();
 			std::cout << "READY\n";
 			break;
 		case EquipmentState::RUNNING :
 			wafer.PrintInfo();
+			Sensor.PrintStatus();
 			std::cout << "RUNNING\n";
 			break;
 		case EquipmentState::ERROR:
 			wafer.PrintInfo();
+			Sensor.PrintStatus();
 			std::cout << "ERROR\n";
 			break;
 	}

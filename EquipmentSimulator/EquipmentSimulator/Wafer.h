@@ -19,5 +19,4 @@ class Wafer {
 		void StartProcessing();
 		void CompleteProcess();
 		void PrintInfo();
-
 };
