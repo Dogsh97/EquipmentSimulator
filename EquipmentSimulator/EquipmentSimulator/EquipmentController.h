@@ -2,6 +2,7 @@
 #include "Wafer.h"
 #include "Sensor.h"
 #include "Alarm.h"
+#include "Logger.h"
 
 enum class EquipmentState{
 	IDLE,
@@ -16,8 +17,9 @@ class EquipmentController {
 private:
 	EquipmentState currentState;
 	Wafer wafer;
-	Sensor Sensor;
-	AlarmManager AlarmManager;
+	Sensor sensor;
+	AlarmManager alarmManager;
+	Logger logger;
 
 public:
 	EquipmentController();

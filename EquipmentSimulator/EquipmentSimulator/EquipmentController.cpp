@@ -1,5 +1,6 @@
 #include <iostream>
 #include "EquipmentController.h"
+#include <string>
 
 EquipmentController::EquipmentController() 
 	: currentState(EquipmentState::IDLE)
@@ -9,6 +10,7 @@ EquipmentController::EquipmentController()
 void EquipmentController::Initialize() {
 	if (currentState == EquipmentState::IDLE) {
 		currentState = EquipmentState::INITIALIZING;
+		logger.Log("INITIALIZE");
 	}
 	else {
 		std::cout << "[ERROR] Initialize command rejected.\n";
@@ -18,6 +20,7 @@ void EquipmentController::Initialize() {
 void EquipmentController::CompleteInitialization() {
 	if (currentState == EquipmentState::INITIALIZING) {
 		currentState = EquipmentState::READY;
+		logger.Log("CompleteInitialization");
 		
 	}
 	else {
@@ -28,33 +31,35 @@ void EquipmentController::CompleteInitialization() {
 void EquipmentController::LoadWafer(int id) {
 	if (currentState == EquipmentState::READY) {
 		wafer.Load(id);
-		Sensor.DetectWafer();
+		sensor.DetectWafer();
 		currentState = EquipmentState::Loading;
-		AlarmManager.ClearAlarm();
+		alarmManager.ClearAlarm();
+		logger.Log("LoadWafer id :" + std::to_string(id));
 	}
 	else {
 		std::cout << "[ERROR] LoadWafer command rejected.\n";
-		AlarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
-		AlarmManager.PrintAlarm();
+		alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
+		alarmManager.PrintAlarm();
 	}
 }
 
 void EquipmentController::Start() {
-	if (Sensor.IsDetected()) {
+	if (sensor.IsDetected()) {
 		if (currentState == EquipmentState::Loading) {
 			currentState = EquipmentState::RUNNING;
 			wafer.StartProcessing();
-			AlarmManager.ClearAlarm();
+			alarmManager.ClearAlarm();
+			logger.Log("Start");
 		}
 		else {
 			std::cout << "[ERROR] Start command rejected.\n";
-			AlarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
-			AlarmManager.PrintAlarm();
+			alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
+			alarmManager.PrintAlarm();
 		}
 	}
 	else {
-		AlarmManager.RaiseAlarm(AlarmCode::WAFER_NOT_DETECTED);
-		AlarmManager.PrintAlarm();
+		alarmManager.RaiseAlarm(AlarmCode::WAFER_NOT_DETECTED);
+		alarmManager.PrintAlarm();
 	}
 }
 
@@ -62,7 +67,8 @@ void EquipmentController::Complete() {
 	if (currentState == EquipmentState::RUNNING) {
 		currentState = EquipmentState::READY;
 		wafer.CompleteProcess();
-		Sensor.RemoveWafer();
+		sensor.RemoveWafer();
+		logger.Log("Complete");
 	}
 	else {
 		std::cout << "[ERROR] Complete command rejected.\n";
@@ -72,8 +78,9 @@ void EquipmentController::Complete() {
 void EquipmentController::RaiseError() {
 	if (currentState == EquipmentState::RUNNING) {
 		currentState = EquipmentState::ERROR;
-		AlarmManager.RaiseAlarm(AlarmCode::PROCESS_ALREADY_RUNNING);
-		AlarmManager.PrintAlarm();
+		alarmManager.RaiseAlarm(AlarmCode::PROCESS_ALREADY_RUNNING);
+		alarmManager.PrintAlarm();
+		logger.Log("RaiseError");
 	}
 	else {
 		std::cout << "[ERROR] RaiseError command rejected.\n";
@@ -83,6 +90,7 @@ void EquipmentController::RaiseError() {
 void EquipmentController::Reset() {
 	if (currentState == EquipmentState::ERROR) {
 		currentState = EquipmentState::READY;
+		logger.Log("Reset");
 	}
 	else {
 		std::cout << "[ERROR] Reset command rejected.\n";
@@ -93,38 +101,44 @@ void EquipmentController::PrintState() {
 	switch (currentState) {
 		case EquipmentState::IDLE:
 			wafer.PrintInfo();
-			Sensor.PrintStatus();
-			AlarmManager.PrintAlarm();
+			sensor.PrintStatus();
+			alarmManager.PrintAlarm();
+			logger.PrintLog();
 			std::cout << "IDLE\n";
 			break;
 		case EquipmentState::INITIALIZING:
 			wafer.PrintInfo();
-			Sensor.PrintStatus();
-			AlarmManager.PrintAlarm();
+			sensor.PrintStatus();
+			alarmManager.PrintAlarm();
+			logger.PrintLog();
 			std::cout << "INITIALIZING\n";
 			break;
 		case EquipmentState::Loading:
 			wafer.PrintInfo();
-			Sensor.PrintStatus();
-			AlarmManager.PrintAlarm();
+			sensor.PrintStatus();
+			alarmManager.PrintAlarm();
+			logger.PrintLog();
 			std::cout << "Loading\n";
 			break;
 		case EquipmentState::READY:
 			wafer.PrintInfo();
-			Sensor.PrintStatus();
-			AlarmManager.PrintAlarm();
+			sensor.PrintStatus();
+			alarmManager.PrintAlarm();
+			logger.PrintLog();
 			std::cout << "READY\n";
 			break;
 		case EquipmentState::RUNNING :
 			wafer.PrintInfo();
-			Sensor.PrintStatus();
-			AlarmManager.PrintAlarm();
+			sensor.PrintStatus();
+			alarmManager.PrintAlarm();
+			logger.PrintLog();
 			std::cout << "RUNNING\n";
 			break;
 		case EquipmentState::ERROR:
 			wafer.PrintInfo();
-			Sensor.PrintStatus();
-			AlarmManager.PrintAlarm();
+			sensor.PrintStatus();
+			alarmManager.PrintAlarm();
+			logger.PrintLog();
 			std::cout << "ERROR\n";
 			break;
 	}
