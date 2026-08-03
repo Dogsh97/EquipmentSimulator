@@ -36,6 +36,9 @@ void AlarmManager::PrintAlarm() const {
 		case AlarmCode::PROCESS_ALREADY_RUNNING:
 			std::cout << "AlarmCode : PROCESS_ALREADY_RUNNING";
 			break;
+		case AlarmCode::RECIPE_NOT_SET:
+			std::cout << "AlarmCode : RECIPE_NOT_SET";
+			break;
 	}
 	
 }

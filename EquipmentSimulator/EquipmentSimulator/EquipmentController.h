@@ -3,6 +3,7 @@
 #include "Sensor.h"
 #include "Alarm.h"
 #include "Logger.h"
+#include "Recipe.h"
 
 enum class EquipmentState{
 	IDLE,
@@ -20,11 +21,13 @@ private:
 	Sensor sensor;
 	AlarmManager alarmManager;
 	Logger logger;
+	Recipe recipe;
 
 public:
 	EquipmentController();
 
 	void Initialize();
+	void SetRecipe(int id, float time, float temperature);
 	void CompleteInitialization();
 	void LoadWafer(int id);
 	void Start();
