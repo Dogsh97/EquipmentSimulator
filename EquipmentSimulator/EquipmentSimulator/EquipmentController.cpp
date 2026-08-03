@@ -17,6 +17,11 @@ void EquipmentController::Initialize() {
 	}
 }
 
+void EquipmentController::SetRecipe(int id, float time, float temperature) {
+	recipe.SetRecipe(id, time, temperature);
+	logger.Log("SetRecipe");
+}
+
 void EquipmentController::CompleteInitialization() {
 	if (currentState == EquipmentState::INITIALIZING) {
 		currentState = EquipmentState::READY;
@@ -46,10 +51,17 @@ void EquipmentController::LoadWafer(int id) {
 void EquipmentController::Start() {
 	if (sensor.IsDetected()) {
 		if (currentState == EquipmentState::Loading) {
-			currentState = EquipmentState::RUNNING;
-			wafer.StartProcessing();
-			alarmManager.ClearAlarm();
-			logger.Log("Start");
+			if (recipe.IsSetting()) {
+				currentState = EquipmentState::RUNNING;
+				wafer.StartProcessing();
+				alarmManager.ClearAlarm();
+				logger.Log("Start");
+			}
+			else {
+				std::cout << "[ERROR] Recipe Not Setting.\n";
+				alarmManager.RaiseAlarm(AlarmCode::RECIPE_NOT_SET);
+				alarmManager.PrintAlarm();
+			}
 		}
 		else {
 			std::cout << "[ERROR] Start command rejected.\n";
