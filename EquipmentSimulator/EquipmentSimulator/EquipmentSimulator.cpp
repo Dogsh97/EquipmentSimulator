@@ -6,33 +6,14 @@ int main()
 	EquipmentController equipment;
 
 	
-	equipment.PrintState();
-	equipment.Initialize();
-	equipment.PrintState();
-	equipment.CompleteInitialization();
-	equipment.PrintState();
-	equipment.LoadWafer(1001);
-	equipment.PrintState();
-	equipment.Start();
-	equipment.PrintState();
-	equipment.Initialize();
-	equipment.PrintState();
-	equipment.CompleteInitialization();
-	equipment.PrintState();
-	equipment.LoadWafer(1001);
-	equipment.PrintState();
-	equipment.SetRecipe(1001, 100, 100);
-	equipment.PrintState();
-	equipment.Start();
-	equipment.PrintState();
-	equipment.Complete();
-	equipment.PrintState();
-	equipment.Start();
-	equipment.PrintState();
-	equipment.RaiseError();
-	equipment.PrintState();
-	equipment.Reset();
-	equipment.PrintState();
+	equipment.MakeCommand(Command(CommandType::Initialize));
+	equipment.MakeCommand(Command(CommandType::CompleteInitialization));
+	equipment.MakeCommand(Command(CommandType::SetRecipe,1,30,200));
+	equipment.MakeCommand(Command(CommandType::LoadWafer,1001));
+	equipment.MakeCommand(Command(CommandType::Start));
+	equipment.MakeCommand(Command(CommandType::Complete));
+	equipment.MakeCommand(Command(CommandType::PrintState));
+	equipment.RunCommand();
 
 	return 0;
 }
