@@ -3,8 +3,57 @@
 #include <string>
 
 EquipmentController::EquipmentController() 
-	: currentState(EquipmentState::IDLE)
+	: currentState(EquipmentState::IDLE),
+	command(CommandType::None)
 {
+}
+
+void EquipmentController::MakeCommand(Command command) {
+	commandQueue.PushCommand(command);
+}
+
+void EquipmentController::RunCommand() {
+	while(commandQueue.CommandDetected()) {
+		command = commandQueue.GetCommand();
+		switch (command.GetCommandType()) {
+			case CommandType::Initialize:
+				Initialize();
+				break;
+
+			case CommandType::SetRecipe:
+				SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+				break;
+
+			case CommandType::CompleteInitialization:
+				CompleteInitialization();
+				break;
+
+			case CommandType::LoadWafer:
+				LoadWafer(command.GetCommandWaferId());
+				break;
+
+			case CommandType::Start:
+				Start();
+				break;
+
+			case CommandType::Complete:
+				Complete();
+				break;
+
+			case CommandType::RaiseError:
+				RaiseError();
+				break;
+
+			case CommandType::Reset:
+				Reset();
+				break;
+
+			case CommandType::PrintState:
+				PrintState();
+				break;
+		}
+		commandQueue.PopCommand();
+	}
 }
 
 void EquipmentController::Initialize() {

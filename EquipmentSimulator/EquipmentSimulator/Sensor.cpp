@@ -21,9 +21,9 @@ bool Sensor::IsDetected() const{
 
 void Sensor::PrintStatus() const {
 	if (waferDetected) {
-		std::cout << "Sensor : Detected";
+		std::cout << "Sensor : Detected \n";
 	}
 	else {
-		std::cout << "Sensor : Not Detected";
+		std::cout << "Sensor : Not Detected \n";
 	}
 }

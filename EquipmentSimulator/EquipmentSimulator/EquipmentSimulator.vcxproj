@@ -140,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alarm.cpp" />
+    <ClCompile Include="Command.cpp" />
+    <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="EquipmentController.cpp" />
     <ClCompile Include="EquipmentSimulator.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -149,6 +151,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Alarm.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="EquipmentController.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Recipe.h" />
