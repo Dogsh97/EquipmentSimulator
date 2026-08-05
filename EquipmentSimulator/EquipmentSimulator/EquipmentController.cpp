@@ -2,7 +2,7 @@
 #include "EquipmentController.h"
 #include <string>
 
-EquipmentController::EquipmentController() 
+EquipmentController::EquipmentController()
 	: currentState(EquipmentState::IDLE),
 	command(CommandType::None)
 {
@@ -17,36 +17,71 @@ void EquipmentController::RunCommand() {
 		command = commandQueue.GetCommand();
 		switch (command.GetCommandType()) {
 			case CommandType::Initialize:
-				Initialize();
+			{
+				bool isSuccess = Initialize();
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
-			case CommandType::SetRecipe:
+			case CommandType::SetRecipe:	
 				SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
 				break;
 
 			case CommandType::CompleteInitialization:
-				CompleteInitialization();
+			{
+				bool isSuccess = CompleteInitialization();
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
 			case CommandType::LoadWafer:
-				LoadWafer(command.GetCommandWaferId());
+			{
+				bool isSuccess = LoadWafer(command.GetCommandWaferId());
+				if(!isSuccess){
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
 			case CommandType::Start:
-				Start();
+			{
+				bool isSuccess = Start();
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
 			case CommandType::Complete:
-				Complete();
+			{
+				bool isSuccess = Complete();
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
 			case CommandType::RaiseError:
-				RaiseError();
+			{
+				bool isSuccess = RaiseError();
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
 			case CommandType::Reset:
-				Reset();
+			{
+				bool isSuccess = Reset();
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
+			}
 
 			case CommandType::PrintState:
 				PrintState();
@@ -56,13 +91,27 @@ void EquipmentController::RunCommand() {
 	}
 }
 
-void EquipmentController::Initialize() {
+void EquipmentController::PrintFailedCommands() {
+	std::queue<Command> temp;
+	temp = failedCommandQueue;
+
+	while (!temp.empty()) {
+		std::cout << "Command:";
+		temp.front().PrintCommand();
+		std::cout << "\n";
+		temp.pop();
+	}
+}
+
+bool EquipmentController::Initialize() {
 	if (currentState == EquipmentState::IDLE) {
 		currentState = EquipmentState::INITIALIZING;
 		logger.Log("INITIALIZE");
+		return true;
 	}
 	else {
 		std::cout << "[ERROR] Initialize command rejected.\n";
+		return false;
 	}
 }
 
@@ -71,33 +120,37 @@ void EquipmentController::SetRecipe(int id, float time, float temperature) {
 	logger.Log("SetRecipe");
 }
 
-void EquipmentController::CompleteInitialization() {
+bool EquipmentController::CompleteInitialization() {
 	if (currentState == EquipmentState::INITIALIZING) {
 		currentState = EquipmentState::READY;
 		logger.Log("CompleteInitialization");
+		return true;
 		
 	}
 	else {
 		std::cout << "[ERROR] CompleteInitialization command rejected.\n";
+		return false;
 	}
 }
 
-void EquipmentController::LoadWafer(int id) {
+bool EquipmentController::LoadWafer(int id) {
 	if (currentState == EquipmentState::READY) {
 		wafer.Load(id);
 		sensor.DetectWafer();
 		currentState = EquipmentState::Loading;
 		alarmManager.ClearAlarm();
 		logger.Log("LoadWafer id :" + std::to_string(id));
+		return true;
 	}
 	else {
 		std::cout << "[ERROR] LoadWafer command rejected.\n";
 		alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
 		alarmManager.PrintAlarm();
+		return false;
 	}
 }
 
-void EquipmentController::Start() {
+bool EquipmentController::Start() {
 	if (sensor.IsDetected()) {
 		if (currentState == EquipmentState::Loading) {
 			if (recipe.IsSetting()) {
@@ -105,56 +158,66 @@ void EquipmentController::Start() {
 				wafer.StartProcessing();
 				alarmManager.ClearAlarm();
 				logger.Log("Start");
+				return true;
 			}
 			else {
 				std::cout << "[ERROR] Recipe Not Setting.\n";
 				alarmManager.RaiseAlarm(AlarmCode::RECIPE_NOT_SET);
 				alarmManager.PrintAlarm();
+				return false;
 			}
 		}
 		else {
 			std::cout << "[ERROR] Start command rejected.\n";
 			alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
 			alarmManager.PrintAlarm();
+			return false;
 		}
 	}
 	else {
 		alarmManager.RaiseAlarm(AlarmCode::WAFER_NOT_DETECTED);
 		alarmManager.PrintAlarm();
+		return false;
 	}
 }
 
-void EquipmentController::Complete() {
+bool EquipmentController::Complete() {
 	if (currentState == EquipmentState::RUNNING) {
 		currentState = EquipmentState::READY;
 		wafer.CompleteProcess();
 		sensor.RemoveWafer();
 		logger.Log("Complete");
+		return true;
 	}
 	else {
 		std::cout << "[ERROR] Complete command rejected.\n";
+		return false;
 	}
 }
 
-void EquipmentController::RaiseError() {
+bool EquipmentController::RaiseError() {
 	if (currentState == EquipmentState::RUNNING) {
 		currentState = EquipmentState::ERROR;
 		alarmManager.RaiseAlarm(AlarmCode::PROCESS_ALREADY_RUNNING);
 		alarmManager.PrintAlarm();
 		logger.Log("RaiseError");
+		return true;
 	}
 	else {
 		std::cout << "[ERROR] RaiseError command rejected.\n";
+		return false;
 	}
 }
 
-void EquipmentController::Reset() {
+bool EquipmentController::Reset() {
 	if (currentState == EquipmentState::ERROR) {
 		currentState = EquipmentState::READY;
 		logger.Log("Reset");
+		return true;
 	}
 	else {
 		std::cout << "[ERROR] Reset command rejected.\n";
+		return false;
 	}
 }
 

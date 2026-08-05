@@ -5,7 +5,11 @@ int main()
 {
 	EquipmentController equipment;
 
-	
+	equipment.MakeCommand(Command(CommandType::LoadWafer, 1001));
+	equipment.MakeCommand(Command(CommandType::Start));
+	equipment.MakeCommand(Command(CommandType::Complete));
+	equipment.MakeCommand(Command(CommandType::Reset));
+	equipment.RunCommand();
 	equipment.MakeCommand(Command(CommandType::Initialize));
 	equipment.MakeCommand(Command(CommandType::CompleteInitialization));
 	equipment.MakeCommand(Command(CommandType::SetRecipe,1,30,200));
@@ -14,6 +18,6 @@ int main()
 	equipment.MakeCommand(Command(CommandType::Complete));
 	equipment.MakeCommand(Command(CommandType::PrintState));
 	equipment.RunCommand();
-
+	equipment.PrintFailedCommands();
 	return 0;
 }
