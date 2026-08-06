@@ -19,19 +19,27 @@ void EquipmentController::RunCommand() {
 			case CommandType::Initialize:
 			{
 				bool isSuccess = Initialize();
+				EventLog eventlog(CommandType::Initialize, isSuccess);
+				logger.AddEventLog(eventlog);
 				if (!isSuccess) {
 					failedCommandQueue.push(command);
 				}
 				break;
 			}
 
-			case CommandType::SetRecipe:	
+			case CommandType::SetRecipe:
+			{
 				SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+				EventLog eventlog(CommandType::SetRecipe, true);
+				logger.AddEventLog(eventlog);
 				break;
+			}
 
 			case CommandType::CompleteInitialization:
 			{
 				bool isSuccess = CompleteInitialization();
+				EventLog eventlog(CommandType::CompleteInitialization, isSuccess);
+				logger.AddEventLog(eventlog);
 				if (!isSuccess) {
 					failedCommandQueue.push(command);
 				}
@@ -41,6 +49,9 @@ void EquipmentController::RunCommand() {
 			case CommandType::LoadWafer:
 			{
 				bool isSuccess = LoadWafer(command.GetCommandWaferId());
+
+				EventLog eventlog(CommandType::LoadWafer, isSuccess);
+				logger.AddEventLog(eventlog);
 				if(!isSuccess){
 					failedCommandQueue.push(command);
 				}
@@ -50,6 +61,8 @@ void EquipmentController::RunCommand() {
 			case CommandType::Start:
 			{
 				bool isSuccess = Start();
+				EventLog eventlog(CommandType::Start, isSuccess);
+				logger.AddEventLog(eventlog);
 				if (!isSuccess) {
 					failedCommandQueue.push(command);
 				}
@@ -59,6 +72,8 @@ void EquipmentController::RunCommand() {
 			case CommandType::Complete:
 			{
 				bool isSuccess = Complete();
+				EventLog eventlog(CommandType::Complete, isSuccess);
+				logger.AddEventLog(eventlog);
 				if (!isSuccess) {
 					failedCommandQueue.push(command);
 				}
@@ -68,6 +83,8 @@ void EquipmentController::RunCommand() {
 			case CommandType::RaiseError:
 			{
 				bool isSuccess = RaiseError();
+				EventLog eventlog(CommandType::RaiseError, isSuccess);
+				logger.AddEventLog(eventlog);
 				if (!isSuccess) {
 					failedCommandQueue.push(command);
 				}
@@ -77,6 +94,8 @@ void EquipmentController::RunCommand() {
 			case CommandType::Reset:
 			{
 				bool isSuccess = Reset();
+				EventLog eventlog(CommandType::Reset, isSuccess);
+				logger.AddEventLog(eventlog);
 				if (!isSuccess) {
 					failedCommandQueue.push(command);
 				}
@@ -84,8 +103,12 @@ void EquipmentController::RunCommand() {
 			}
 
 			case CommandType::PrintState:
+			{
 				PrintState();
+				EventLog eventlog(CommandType::PrintState, true);
+				logger.AddEventLog(eventlog);
 				break;
+			}
 		}
 		commandQueue.PopCommand();
 	}
@@ -266,4 +289,8 @@ void EquipmentController::PrintState() {
 			std::cout << "ERROR\n";
 			break;
 	}
+}
+
+void EquipmentController::PrintEventLogs() {
+	logger.PrintEventLogs();
 }

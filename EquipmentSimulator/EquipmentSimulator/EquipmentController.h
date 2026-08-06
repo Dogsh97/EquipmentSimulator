@@ -6,6 +6,7 @@
 #include "Recipe.h"
 #include "Command.h"
 #include "CommandQueue.h"
+#include "EventLog.h"
 #include <queue>
 
 enum class EquipmentState{
@@ -44,4 +45,5 @@ public:
 	bool RaiseError();
 	bool Reset();
 	void PrintState();
+	void PrintEventLogs();
 };

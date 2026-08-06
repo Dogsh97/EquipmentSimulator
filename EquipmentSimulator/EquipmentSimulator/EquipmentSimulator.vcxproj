@@ -144,6 +144,7 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="EquipmentController.cpp" />
     <ClCompile Include="EquipmentSimulator.cpp" />
+    <ClCompile Include="EventLog.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Recipe.cpp" />
     <ClCompile Include="Sensor.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="EquipmentController.h" />
+    <ClInclude Include="EventLog.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Recipe.h" />
     <ClInclude Include="Sensor.h" />
