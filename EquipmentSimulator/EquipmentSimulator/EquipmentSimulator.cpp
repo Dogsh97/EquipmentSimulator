@@ -19,5 +19,6 @@ int main()
 	equipment.MakeCommand(Command(CommandType::PrintState));
 	equipment.RunCommand();
 	equipment.PrintFailedCommands();
+	equipment.PrintEventLogs();
 	return 0;
 }

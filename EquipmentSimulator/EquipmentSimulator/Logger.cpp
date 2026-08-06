@@ -14,3 +14,13 @@ void Logger::PrintLog() const {
 		std::cout << log << '\n';
 	}
 }
+
+void Logger::AddEventLog(EventLog eventlog) {
+	eventLogs.push_back(eventlog);
+}
+
+void Logger::PrintEventLogs() {
+	for (int i = 0; i < eventLogs.size(); ++i) {
+		eventLogs[i].Print();
+	}
+}
