@@ -20,5 +20,6 @@ int main()
 	equipment.RunCommand();
 	equipment.PrintFailedCommands();
 	equipment.PrintEventLogs();
+	equipment.PrintAlarmHistory();
 	return 0;
 }

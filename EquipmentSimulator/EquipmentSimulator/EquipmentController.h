@@ -1,7 +1,7 @@
 #pragma once
 #include "Wafer.h"
 #include "Sensor.h"
-#include "Alarm.h"
+#include "AlarmManager.h"
 #include "Logger.h"
 #include "Recipe.h"
 #include "Command.h"
@@ -46,4 +46,5 @@ public:
 	bool Reset();
 	void PrintState();
 	void PrintEventLogs();
+	void PrintAlarmHistory();
 };

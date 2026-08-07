@@ -1,0 +1,9 @@
+#pragma once
+
+enum class AlarmCode {
+	NONE,
+	WAFER_NOT_DETECTED,
+	EQUIPMENT_NOT_READY,
+	RECIPE_NOT_SET,
+	PROCESS_ALREADY_RUNNING
+};

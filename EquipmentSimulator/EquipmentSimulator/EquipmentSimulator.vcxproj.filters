@@ -27,7 +27,7 @@
     <ClCompile Include="Sensor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Alarm.cpp">
+    <ClCompile Include="AlarmManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
@@ -45,6 +45,12 @@
     <ClCompile Include="EventLog.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="AlarmHistory.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmCode.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EquipmentController.h">
@@ -56,7 +62,7 @@
     <ClInclude Include="Sensor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Alarm.h">
+    <ClInclude Include="AlarmManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
@@ -72,6 +78,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="EventLog.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmHistory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
