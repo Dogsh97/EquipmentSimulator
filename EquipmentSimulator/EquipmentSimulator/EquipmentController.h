@@ -36,6 +36,7 @@ public:
 	void MakeCommand(Command command);
 	void RunCommand();
 	void PrintFailedCommands();
+	void RetryFailedCommands();
 	bool Initialize();
 	void SetRecipe(int id, float time, float temperature);
 	bool CompleteInitialization();
