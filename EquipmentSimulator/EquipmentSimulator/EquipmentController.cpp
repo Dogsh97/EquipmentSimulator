@@ -294,3 +294,7 @@ void EquipmentController::PrintState() {
 void EquipmentController::PrintEventLogs() {
 	logger.PrintEventLogs();
 }
+
+void EquipmentController::PrintAlarmHistory() {
+	alarmManager.PrintAlarmHistory();
+}

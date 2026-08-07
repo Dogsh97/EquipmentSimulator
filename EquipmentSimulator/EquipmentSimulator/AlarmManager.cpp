@@ -1,25 +1,27 @@
 #include <iostream>
-#include "Alarm.h"
+#include "AlarmManager.h"
 
 AlarmManager::AlarmManager()
 	: currentAlarm(AlarmCode::NONE),
-	AlarmDetected(false)
+	alarmDetected(false)
 {
 }
 
 void AlarmManager::RaiseAlarm(AlarmCode code) {
-		AlarmDetected = true;
+		alarmDetected = true;
 		currentAlarm = code;
+		AlarmHistory history(code);
+		AddAlarmHistory(history);
 }
 
 
 void AlarmManager::ClearAlarm() {
-	AlarmDetected = false;
+	alarmDetected = false;
 	currentAlarm = AlarmCode::NONE;
 }
 
 bool AlarmManager::HasAlarm() const {
-	return AlarmDetected;
+	return alarmDetected;
 }
 
 void AlarmManager::PrintAlarm() const {
@@ -41,4 +43,14 @@ void AlarmManager::PrintAlarm() const {
 			break;
 	}
 	
+}
+
+void AlarmManager::AddAlarmHistory(AlarmHistory alarmhistory) {
+	alarmHistories.push_back(alarmhistory);
+}
+
+void AlarmManager::PrintAlarmHistory() {
+	for (int i = 0; i < alarmHistories.size(); ++i) {
+		alarmHistories[i].Print();
+	}
 }

@@ -139,7 +139,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Alarm.cpp" />
+    <ClCompile Include="AlarmManager.cpp" />
+    <ClCompile Include="AlarmCode.h" />
+    <ClCompile Include="AlarmHistory.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="EquipmentController.cpp" />
@@ -151,7 +153,8 @@
     <ClCompile Include="Wafer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Alarm.h" />
+    <ClInclude Include="AlarmManager.h" />
+    <ClInclude Include="AlarmHistory.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="EquipmentController.h" />
