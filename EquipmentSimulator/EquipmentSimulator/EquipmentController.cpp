@@ -126,6 +126,15 @@ void EquipmentController::PrintFailedCommands() {
 	}
 }
 
+void EquipmentController::RetryFailedCommands() {
+	while (!failedCommandQueue.empty()) {
+		commandQueue.PushCommand(failedCommandQueue.front());
+		failedCommandQueue.pop();
+	}
+
+	RunCommand();
+}
+
 bool EquipmentController::Initialize() {
 	if (currentState == EquipmentState::IDLE) {
 		currentState = EquipmentState::INITIALIZING;
