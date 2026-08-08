@@ -20,6 +20,7 @@ class Command {
 		float processTime;
 		float temperature;
 		int waferId;
+		int retryCount;
 
 	public:
 		Command(CommandType type);
@@ -31,4 +32,7 @@ class Command {
 		float GetCommandProcessTime() const;
 		float GetCommandTemperature() const;
 		void PrintCommand() const;
+		void IncreaseRetryCount();
+		int GetRetryCount() const;
+		void ResetRetryCount();
 };

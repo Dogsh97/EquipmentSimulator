@@ -29,6 +29,7 @@ private:
 	Command command;
 	CommandQueue commandQueue;
 	std::queue<Command> failedCommandQueue;
+	const int RetryCountMax = 3;
 
 public:
 	EquipmentController();
