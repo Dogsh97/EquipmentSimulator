@@ -6,7 +6,8 @@ Command::Command(CommandType type)
 	recipeId(-1),
 	processTime(-1),
 	temperature(-1),
-	waferId(-1)
+	waferId(-1),
+	retryCount(0)
 {
 }
 
@@ -15,7 +16,8 @@ Command::Command(CommandType type, int recipeId, float processTime, float temper
 	recipeId(recipeId),
 	processTime(processTime),
 	temperature(temperature),
-	waferId(-1)
+	waferId(-1),
+	retryCount(0)
 {
 }
 
@@ -24,7 +26,8 @@ Command::Command(CommandType type, int waferId)
 	waferId(waferId),
 	recipeId(-1),
 	processTime(-1),
-	temperature(-1)
+	temperature(-1),
+	retryCount(0)
 {
 }
 
@@ -90,4 +93,16 @@ void Command::PrintCommand() const {
 			std::cout << "CommandType : PrintState";
 			break;
 	}
+}
+
+void Command::IncreaseRetryCount() {
+	retryCount++;
+}
+
+int Command::GetRetryCount() const{
+	return retryCount;
+}
+
+void Command::ResetRetryCount() {
+	retryCount = 0;
 }

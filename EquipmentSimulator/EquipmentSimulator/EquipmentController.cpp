@@ -117,7 +117,6 @@ void EquipmentController::RunCommand() {
 void EquipmentController::PrintFailedCommands() {
 	std::queue<Command> temp;
 	temp = failedCommandQueue;
-
 	while (!temp.empty()) {
 		std::cout << "Command:";
 		temp.front().PrintCommand();
@@ -127,12 +126,15 @@ void EquipmentController::PrintFailedCommands() {
 }
 
 void EquipmentController::RetryFailedCommands() {
-	while (!failedCommandQueue.empty()) {
-		commandQueue.PushCommand(failedCommandQueue.front());
-		failedCommandQueue.pop();
-	}
-
-	RunCommand();
+		while (!failedCommandQueue.empty()) {
+			Command temp(failedCommandQueue.front());
+			if (temp.GetRetryCount() < RetryCountMax) {
+				temp.IncreaseRetryCount();
+				commandQueue.PushCommand(temp);
+			}
+			failedCommandQueue.pop();
+		}
+		RunCommand();
 }
 
 bool EquipmentController::Initialize() {
