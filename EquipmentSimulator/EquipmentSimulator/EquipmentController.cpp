@@ -29,9 +29,12 @@ void EquipmentController::RunCommand() {
 
 			case CommandType::SetRecipe:
 			{
-				SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
-				EventLog eventlog(CommandType::SetRecipe, true);
+				bool isSuccess = SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+				EventLog eventlog(CommandType::SetRecipe, isSuccess);
 				logger.AddEventLog(eventlog);
+				if (!isSuccess) {
+					failedCommandQueue.push(command);
+				}
 				break;
 			}
 
@@ -149,9 +152,16 @@ bool EquipmentController::Initialize() {
 	}
 }
 
-void EquipmentController::SetRecipe(int id, float time, float temperature) {
-	recipe.SetRecipe(id, time, temperature);
-	logger.Log("SetRecipe");
+bool EquipmentController::SetRecipe(int id, float time, float temperature) {	
+	if(!recipe.IsValid(id, time, temperature)) {
+		logger.Log("Recipe is not Valid");
+		return false;
+	}
+	else {
+		recipe.SetRecipe(id, time, temperature);
+		logger.Log("SetRecipe");
+		return true;
+	}	
 }
 
 bool EquipmentController::CompleteInitialization() {

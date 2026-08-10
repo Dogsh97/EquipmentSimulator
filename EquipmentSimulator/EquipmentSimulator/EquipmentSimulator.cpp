@@ -5,37 +5,30 @@ int main()
 {
 	EquipmentController equipment;
 
-	// 장비 초기화
-	equipment.MakeCommand(Command(CommandType::Initialize));
-	equipment.MakeCommand(Command(CommandType::CompleteInitialization));
-	equipment.RunCommand();
+    std::cout << "===== Valid SetRecipe Command =====\n";
 
-	// Retry가 계속 실패하도록 Command 추가
-	equipment.MakeCommand(Command(CommandType::Start));
-	equipment.RunCommand();
+    equipment.MakeCommand(
+        Command(CommandType::SetRecipe, 1, 10.0f, 200.0f)
+    );
 
-	// 최초 실패 확인
-	std::cout << "\n===== Initial Failed Command =====\n";
-	equipment.PrintFailedCommands();
+    equipment.RunCommand();
 
-	// Retry 1
-	std::cout << "\n===== Retry 1 =====\n";
-	equipment.RetryFailedCommands();
-	equipment.PrintFailedCommands();
+    std::cout << "\n===== Invalid SetRecipe Command =====\n";
 
-	// Retry 2
-	std::cout << "\n===== Retry 2 =====\n";
-	equipment.RetryFailedCommands();
-	equipment.PrintFailedCommands();
+    equipment.MakeCommand(
+        Command(CommandType::SetRecipe, 1, 10.0f, -1.0f)
+    );
 
-	// Retry 3
-	std::cout << "\n===== Retry 3 =====\n";
-	equipment.RetryFailedCommands();
-	equipment.PrintFailedCommands();
+    equipment.RunCommand();
 
-	// Retry 4 - 제한 초과 확인
-	std::cout << "\n===== Retry 4 =====\n";
-	equipment.RetryFailedCommands();
-	equipment.PrintFailedCommands();
+    std::cout << "\n===== Failed Commands =====\n";
+
+    equipment.PrintFailedCommands();
+
+    std::cout << "\n===== Event Logs =====\n";
+
+    equipment.PrintEventLogs();
+
+
 	return 0;
 }

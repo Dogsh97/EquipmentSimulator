@@ -25,3 +25,19 @@ void Recipe::PrintInfo() const{
 bool Recipe::IsSetting() const{
 	return isSet;
 }
+
+bool Recipe::IsValid(int id, float time, float temperature) const {
+	if (id == -1) {
+		return false;
+	}
+
+	if (time == -1) {
+		return false;
+	}
+
+	if (temperature == -1) {
+		return false;
+	}
+
+	return true;
+}
