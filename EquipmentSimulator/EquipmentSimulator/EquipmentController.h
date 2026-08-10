@@ -39,7 +39,7 @@ public:
 	void PrintFailedCommands();
 	void RetryFailedCommands();
 	bool Initialize();
-	void SetRecipe(int id, float time, float temperature);
+	bool SetRecipe(int id, float time, float temperature);
 	bool CompleteInitialization();
 	bool LoadWafer(int id);
 	bool Start();
