@@ -26,11 +26,7 @@ bool Recipe::IsSetting() const{
 	return isSet;
 }
 
-bool Recipe::IsValid(int id, float time, float temperature) const {
-	if (id == -1) {
-		return false;
-	}
-
+bool Recipe::IsValid(float time, float temperature) const {
 	if (time == -1) {
 		return false;
 	}

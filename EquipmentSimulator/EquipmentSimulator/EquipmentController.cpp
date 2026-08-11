@@ -15,8 +15,9 @@ void EquipmentController::MakeCommand(Command command) {
 void EquipmentController::RunCommand() {
 	while(commandQueue.CommandDetected()) {
 		command = commandQueue.GetCommand();
-		if (CanExecute(currentState)) {
-			switch (command.GetCommandType()) {
+		if (CommandParameterValidation()) {
+			if (CanExecute(currentState)) {
+				switch (command.GetCommandType()) {
 				case CommandType::Initialize:
 				{
 					bool isSuccess = Initialize();
@@ -113,10 +114,15 @@ void EquipmentController::RunCommand() {
 					logger.AddEventLog(eventlog);
 					break;
 				}
+				}
+			}
+			else {
+				EventLog eventlog(command.GetCommandType(), false);
+				logger.AddEventLog(eventlog);
 			}
 		}
 		else {
-			EventLog eventlog(command.GetCommandType(),false);
+			EventLog eventlog(command.GetCommandType(), false);
 			logger.AddEventLog(eventlog);
 		}
 		commandQueue.PopCommand();
@@ -210,6 +216,26 @@ bool EquipmentController::CanExecute(EquipmentState state) {
 	return false;
 }
 
+bool EquipmentController::CommandParameterValidation() {
+	switch (command.GetCommandType()) {
+	case CommandType::SetRecipe:
+		if (command.GetCommandRecipeId() <= 0) {
+			return false;
+		}
+		return true;
+
+	case CommandType::LoadWafer:
+		if (command.GetCommandWaferId() <= 0) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	return true;
+	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
+}
+
 bool EquipmentController::Initialize() {
 	if (currentState == EquipmentState::IDLE) {
 		currentState = EquipmentState::INITIALIZING;
@@ -223,7 +249,7 @@ bool EquipmentController::Initialize() {
 }
 
 bool EquipmentController::SetRecipe(int id, float time, float temperature) {	
-	if(!recipe.IsValid(id, time, temperature)) {
+	if(!recipe.IsValid(time, temperature)) {
 		logger.Log("Recipe is not Valid");
 		return false;
 	}
