@@ -49,4 +49,5 @@ public:
 	void PrintState();
 	void PrintEventLogs();
 	void PrintAlarmHistory();
+	bool CanExecute(EquipmentState state);
 };
