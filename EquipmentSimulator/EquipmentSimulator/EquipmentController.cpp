@@ -15,103 +15,109 @@ void EquipmentController::MakeCommand(Command command) {
 void EquipmentController::RunCommand() {
 	while(commandQueue.CommandDetected()) {
 		command = commandQueue.GetCommand();
-		switch (command.GetCommandType()) {
-			case CommandType::Initialize:
-			{
-				bool isSuccess = Initialize();
-				EventLog eventlog(CommandType::Initialize, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+		if (CanExecute(currentState)) {
+			switch (command.GetCommandType()) {
+				case CommandType::Initialize:
+				{
+					bool isSuccess = Initialize();
+					EventLog eventlog(CommandType::Initialize, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::SetRecipe:
-			{
-				bool isSuccess = SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
-				EventLog eventlog(CommandType::SetRecipe, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+				case CommandType::SetRecipe:
+				{
+					bool isSuccess = SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+					EventLog eventlog(CommandType::SetRecipe, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::CompleteInitialization:
-			{
-				bool isSuccess = CompleteInitialization();
-				EventLog eventlog(CommandType::CompleteInitialization, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+				case CommandType::CompleteInitialization:
+				{
+					bool isSuccess = CompleteInitialization();
+					EventLog eventlog(CommandType::CompleteInitialization, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::LoadWafer:
-			{
-				bool isSuccess = LoadWafer(command.GetCommandWaferId());
+				case CommandType::LoadWafer:
+				{
+					bool isSuccess = LoadWafer(command.GetCommandWaferId());
 
-				EventLog eventlog(CommandType::LoadWafer, isSuccess);
-				logger.AddEventLog(eventlog);
-				if(!isSuccess){
-					failedCommandQueue.push(command);
+					EventLog eventlog(CommandType::LoadWafer, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::Start:
-			{
-				bool isSuccess = Start();
-				EventLog eventlog(CommandType::Start, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+				case CommandType::Start:
+				{
+					bool isSuccess = Start();
+					EventLog eventlog(CommandType::Start, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::Complete:
-			{
-				bool isSuccess = Complete();
-				EventLog eventlog(CommandType::Complete, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+				case CommandType::Complete:
+				{
+					bool isSuccess = Complete();
+					EventLog eventlog(CommandType::Complete, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::RaiseError:
-			{
-				bool isSuccess = RaiseError();
-				EventLog eventlog(CommandType::RaiseError, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+				case CommandType::RaiseError:
+				{
+					bool isSuccess = RaiseError();
+					EventLog eventlog(CommandType::RaiseError, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::Reset:
-			{
-				bool isSuccess = Reset();
-				EventLog eventlog(CommandType::Reset, isSuccess);
-				logger.AddEventLog(eventlog);
-				if (!isSuccess) {
-					failedCommandQueue.push(command);
+				case CommandType::Reset:
+				{
+					bool isSuccess = Reset();
+					EventLog eventlog(CommandType::Reset, isSuccess);
+					logger.AddEventLog(eventlog);
+					if (!isSuccess) {
+						failedCommandQueue.push(command);
+					}
+					break;
 				}
-				break;
-			}
 
-			case CommandType::PrintState:
-			{
-				PrintState();
-				EventLog eventlog(CommandType::PrintState, true);
-				logger.AddEventLog(eventlog);
-				break;
+				case CommandType::PrintState:
+				{
+					PrintState();
+					EventLog eventlog(CommandType::PrintState, true);
+					logger.AddEventLog(eventlog);
+					break;
+				}
 			}
+		}
+		else {
+			EventLog eventlog(command.GetCommandType(),false);
+			logger.AddEventLog(eventlog);
 		}
 		commandQueue.PopCommand();
 	}
@@ -138,6 +144,70 @@ void EquipmentController::RetryFailedCommands() {
 			failedCommandQueue.pop();
 		}
 		RunCommand();
+}
+
+bool EquipmentController::CanExecute(EquipmentState state) {
+	switch (command.GetCommandType()) {
+		case CommandType::Initialize:
+			if (state == EquipmentState::IDLE) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::CompleteInitialization:
+			if (state == EquipmentState::INITIALIZING) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::SetRecipe:
+			if (state == EquipmentState::READY) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::LoadWafer:
+			if (state == EquipmentState::READY) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::Start:
+			if (state == EquipmentState::Loading) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::Complete:
+			if (state == EquipmentState::RUNNING) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::Reset:
+			if (state == EquipmentState::ERROR) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::RaiseError:
+			if (state == EquipmentState::RUNNING) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		case CommandType::PrintState:
+			return true;
+	}
+	return false;
 }
 
 bool EquipmentController::Initialize() {
