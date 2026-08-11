@@ -30,6 +30,8 @@ private:
 	CommandQueue commandQueue;
 	std::queue<Command> failedCommandQueue;
 	const int RetryCountMax = 3;
+	bool CanExecute(EquipmentState state);
+	bool CommandParameterValidation();
 
 public:
 	EquipmentController();
@@ -48,6 +50,5 @@ public:
 	bool Reset();
 	void PrintState();
 	void PrintEventLogs();
-	void PrintAlarmHistory();
-	bool CanExecute(EquipmentState state);
+	void PrintAlarmHistory();	
 };

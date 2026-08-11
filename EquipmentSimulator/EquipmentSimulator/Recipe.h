@@ -13,5 +13,5 @@ class Recipe {
 		void SetRecipe(int id, float time, float temperature);
 		void PrintInfo() const;
 		bool IsSetting() const;
-		bool IsValid(int id, float time, float temperature) const;
+		bool IsValid(float time, float temperature) const;
 };
