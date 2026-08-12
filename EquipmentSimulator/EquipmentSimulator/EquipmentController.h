@@ -32,6 +32,8 @@ private:
 	const int RetryCountMax = 3;
 	bool CanExecute(EquipmentState state);
 	bool CommandParameterValidation();
+	bool InterlockValidation();
+	bool PostValidation();
 
 public:
 	EquipmentController();
@@ -40,7 +42,6 @@ public:
 	void RunCommand();
 	void PrintFailedCommands();
 	void RetryFailedCommands();
-	bool InterlockValidation();
 	bool Initialize();
 	bool SetRecipe(int id, float time, float temperature);
 	bool CompleteInitialization();

@@ -34,6 +34,15 @@ void Wafer::CompleteProcess() {
 	}
 }
 
+void Wafer::ResetProcess() {
+	if (state == WaferState::COMPLETED) {
+		state = WaferState::EMPTY;
+	}
+	else {
+		std::cout << "[ERROR] Cannot Reset process. Wafer is not Completed.";
+	}
+}
+
 void Wafer::PrintInfo() {
 	switch (state) {
 		case WaferState::EMPTY:
