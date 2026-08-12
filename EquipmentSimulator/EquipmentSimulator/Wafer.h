@@ -18,6 +18,7 @@ class Wafer {
 		void Load(int id);
 		void StartProcessing();
 		void CompleteProcess();
+		void ResetProcess();
 		void PrintInfo();
 		WaferState GetWaferState();
 };
