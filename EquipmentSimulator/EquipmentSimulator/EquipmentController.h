@@ -40,6 +40,7 @@ public:
 	void RunCommand();
 	void PrintFailedCommands();
 	void RetryFailedCommands();
+	bool InterlockValidation();
 	bool Initialize();
 	bool SetRecipe(int id, float time, float temperature);
 	bool CompleteInitialization();
@@ -50,5 +51,5 @@ public:
 	bool Reset();
 	void PrintState();
 	void PrintEventLogs();
-	void PrintAlarmHistory();	
+	void PrintAlarmHistory();		
 };
