@@ -54,3 +54,7 @@ void Wafer::PrintInfo() {
 			break;
 	}
 }	
+
+WaferState Wafer::GetWaferState() {
+	return state;
+}

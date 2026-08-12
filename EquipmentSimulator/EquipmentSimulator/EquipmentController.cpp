@@ -17,104 +17,103 @@ void EquipmentController::RunCommand() {
 		command = commandQueue.GetCommand();
 		if (CommandParameterValidation()) {
 			if (CanExecute(currentState)) {
-				switch (command.GetCommandType()) {
-				case CommandType::Initialize:
-				{
-					bool isSuccess = Initialize();
-					EventLog eventlog(CommandType::Initialize, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
+				if (InterlockValidation()) {
+						switch (command.GetCommandType()) {
+							case CommandType::Initialize:
+							{
+								bool isSuccess = Initialize();
+								EventLog eventlog(CommandType::Initialize, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::SetRecipe:
+							{
+								bool isSuccess = SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+								EventLog eventlog(CommandType::SetRecipe, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::CompleteInitialization:
+							{
+								bool isSuccess = CompleteInitialization();
+								EventLog eventlog(CommandType::CompleteInitialization, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::LoadWafer:
+							{
+								bool isSuccess = LoadWafer(command.GetCommandWaferId());
+
+								EventLog eventlog(CommandType::LoadWafer, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::Start:
+							{
+								bool isSuccess = Start();
+								EventLog eventlog(CommandType::Start, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::Complete:
+							{
+								bool isSuccess = Complete();
+								EventLog eventlog(CommandType::Complete, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::RaiseError:
+							{
+								bool isSuccess = RaiseError();
+								EventLog eventlog(CommandType::RaiseError, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::Reset:
+							{
+								bool isSuccess = Reset();
+								EventLog eventlog(CommandType::Reset, isSuccess);
+								logger.AddEventLog(eventlog);
+								if (!isSuccess) {
+									failedCommandQueue.push(command);
+								}
+								break;
+							}
+							case CommandType::PrintState:
+							{
+								PrintState();
+								EventLog eventlog(CommandType::PrintState, true);
+								logger.AddEventLog(eventlog);
+								break;
+							}
+						}
 					}
-					break;
-				}
-
-				case CommandType::SetRecipe:
-				{
-					bool isSuccess = SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
-					EventLog eventlog(CommandType::SetRecipe, isSuccess);
+				else{
+					EventLog eventlog(command.GetCommandType(), false);
 					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
 				}
-
-				case CommandType::CompleteInitialization:
-				{
-					bool isSuccess = CompleteInitialization();
-					EventLog eventlog(CommandType::CompleteInitialization, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
-				}
-
-				case CommandType::LoadWafer:
-				{
-					bool isSuccess = LoadWafer(command.GetCommandWaferId());
-
-					EventLog eventlog(CommandType::LoadWafer, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
-				}
-
-				case CommandType::Start:
-				{
-					bool isSuccess = Start();
-					EventLog eventlog(CommandType::Start, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
-				}
-
-				case CommandType::Complete:
-				{
-					bool isSuccess = Complete();
-					EventLog eventlog(CommandType::Complete, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
-				}
-
-				case CommandType::RaiseError:
-				{
-					bool isSuccess = RaiseError();
-					EventLog eventlog(CommandType::RaiseError, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
-				}
-
-				case CommandType::Reset:
-				{
-					bool isSuccess = Reset();
-					EventLog eventlog(CommandType::Reset, isSuccess);
-					logger.AddEventLog(eventlog);
-					if (!isSuccess) {
-						failedCommandQueue.push(command);
-					}
-					break;
-				}
-
-				case CommandType::PrintState:
-				{
-					PrintState();
-					EventLog eventlog(CommandType::PrintState, true);
-					logger.AddEventLog(eventlog);
-					break;
-				}
-				}
+				
 			}
 			else {
 				EventLog eventlog(command.GetCommandType(), false);
@@ -231,6 +230,58 @@ bool EquipmentController::CommandParameterValidation() {
 		else {
 			return true;
 		}
+	}
+	return true;
+	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
+}
+
+bool EquipmentController::InterlockValidation() {
+	switch (command.GetCommandType()) {
+		case CommandType::Start:
+			if (wafer.GetWaferState() != WaferState::LOADED) {
+				return false;
+			}
+			if(sensor.IsDetected() == false){
+				return false;
+			}
+			if (alarmManager.HasAlarm() == true) {
+				return false;
+			}
+			return true;
+
+		case CommandType::Complete:
+			if (wafer.GetWaferState() != WaferState::PROCESSING) {
+				return false;
+			}
+			if (sensor.IsDetected() == false) {
+				return false;
+			}
+			if (alarmManager.HasAlarm() == true) {
+				return false;
+			}
+			return true;
+		case CommandType::RaiseError:
+			if (wafer.GetWaferState() != WaferState::PROCESSING) {
+				return false;
+			}
+			if (sensor.IsDetected() == false) {
+				return false;
+			}
+			if (alarmManager.HasAlarm() == true) {
+				return false;
+			}
+			return true;
+		case CommandType::Reset:
+			if (wafer.GetWaferState() != WaferState::PROCESSING) {
+				return false;
+			}
+			if (sensor.IsDetected() == false) {
+				return false;
+			}
+			if (alarmManager.HasAlarm() == false) {
+				return false;
+			}
+			return true;
 	}
 	return true;
 	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
