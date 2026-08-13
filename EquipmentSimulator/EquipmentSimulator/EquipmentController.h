@@ -34,6 +34,8 @@ private:
 	bool CommandParameterValidation();
 	bool InterlockValidation();
 	bool PostValidation();
+	bool ExecuteCommand(Command command);
+	void CommandResult(Command command);
 
 public:
 	EquipmentController();
@@ -50,7 +52,8 @@ public:
 	bool Complete();
 	bool RaiseError();
 	bool Reset();
-	void PrintState();
+	void AddEventLog(Command command, bool success, CommandResultType type);
+	bool PrintState();
 	void PrintEventLogs();
 	void PrintAlarmHistory();		
 };
