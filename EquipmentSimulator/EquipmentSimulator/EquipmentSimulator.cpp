@@ -3,22 +3,103 @@
 
 int main()
 {
-    EquipmentController equipment;
+    // ==================================================
+   // Test 1. Normal Flow
+   // ==================================================
 
-    equipment.MakeCommand(Command(CommandType::Initialize));
-    equipment.MakeCommand(Command(CommandType::CompleteInitialization));
-    equipment.MakeCommand(Command(CommandType::SetRecipe,1, 1, 1));
-    equipment.MakeCommand(Command(CommandType::LoadWafer,1));
-    equipment.MakeCommand(Command(CommandType::Start));
-    equipment.MakeCommand(Command(CommandType::Complete));
-    equipment.RunCommand();
+    {
+        std::cout << "\n===== Test 1 : Normal Flow =====\n";
 
-    equipment.PrintState();
-    
-    equipment.PrintEventLogs();
+        EquipmentController equipment;
+
+        equipment.MakeCommand(Command(CommandType::Initialize));
+        equipment.MakeCommand(Command(CommandType::CompleteInitialization));
+        equipment.MakeCommand(Command(CommandType::SetRecipe, 1, 1, 1));
+        equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
+        equipment.MakeCommand(Command(CommandType::Start));
+        equipment.MakeCommand(Command(CommandType::Complete));
+
+        equipment.RunCommand();
+
+        equipment.PrintEventLogs();
+    }
 
 
-    equipment.PrintFailedCommands();
+    // ==================================================
+    // Test 2. CanExecute Failed
+    // ==================================================
+
+    {
+        std::cout << "\n===== Test 2 : CanExecute Failed =====\n";
+
+        EquipmentController equipment;
+
+        equipment.MakeCommand(Command(CommandType::Start));
+
+        equipment.RunCommand();
+
+        equipment.PrintEventLogs();
+    }
+
+
+    // ==================================================
+    // Test 3. Parameter Validation Failed
+    // ==================================================
+
+    {
+        std::cout << "\n===== Test 3 : Parameter Validation Failed =====\n";
+
+        EquipmentController equipment;
+
+        equipment.MakeCommand(
+            Command(CommandType::SetRecipe, -11, 1, 1)
+        );
+
+        equipment.RunCommand();
+
+        equipment.PrintEventLogs();
+    }
+
+
+    // ==================================================
+    // Test 4. Command Execution Failed
+    // ==================================================
+
+    {
+        std::cout << "\n===== Test 4 : Command Execution Failed =====\n";
+
+        EquipmentController equipment;
+
+        equipment.MakeCommand(Command(CommandType::Initialize));
+        equipment.MakeCommand(Command(CommandType::CompleteInitialization));
+        equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
+        equipment.MakeCommand(Command(CommandType::Start));
+
+        equipment.RunCommand();
+
+        equipment.PrintEventLogs();
+    }
+
+
+    // ==================================================
+    // Test 5. Interlock Failed
+    // ==================================================
+
+    {
+        std::cout << "\n===== Test 5 : Interlock Failed =====\n";
+
+        EquipmentController equipment;
+
+        equipment.MakeCommand(Command(CommandType::Initialize));
+        equipment.MakeCommand(Command(CommandType::CompleteInitialization));
+        equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
+        equipment.MakeCommand(Command(CommandType::Start));
+        equipment.MakeCommand(Command(CommandType::Start));
+
+        equipment.RunCommand();
+
+        equipment.PrintEventLogs();
+    }
 
     return 0;
 

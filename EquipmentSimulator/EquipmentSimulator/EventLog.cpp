@@ -2,9 +2,10 @@
 #include "EventLog.h"
 #include <string>
 
-EventLog::EventLog(CommandType commandtype, bool success)
+EventLog::EventLog(CommandType commandtype, bool success, CommandResultType type)
 	: commandType(commandtype),
-	success(success)
+	success(success),
+	type(type)
 {
 }
 
@@ -19,50 +20,76 @@ bool EventLog::IsSuccess() {
 void EventLog::Print() {
 	switch (commandType) {
 	case CommandType::None:
-		std::cout << "None";
+		std::cout << "None\n";
 		break;
 
 	case CommandType::Initialize:
-		std::cout << "Initialize";
+		std::cout << "Initialize\n";
 		break;
 
 	case CommandType::SetRecipe:
-		std::cout << "SetRecipe";
+		std::cout << "SetRecipe\n";
 		break;
 
 	case CommandType::CompleteInitialization:
-		std::cout << "CompleteInitialization";
+		std::cout << "CompleteInitialization\n";
 		break;
 
 	case CommandType::LoadWafer:
-		std::cout << "LoadWafer";
+		std::cout << "LoadWafer\n";
 		break;
 
 	case CommandType::Start:
-		std::cout << "Start";
+		std::cout << "Start\n";
 		break;
 
 	case CommandType::Complete:
-		std::cout << "Complete";
+		std::cout << "Complete\n";
 		break;
 
 	case CommandType::RaiseError:
-		std::cout << "RaiseError";
+		std::cout << "RaiseError\n";
 		break;
 
 	case CommandType::Reset:
-		std::cout << "Reset";
+		std::cout << "Reset\n";
 		break;
 
 	case CommandType::PrintState:
-		std::cout << "PrintState";
+		std::cout << "PrintState\n";
 		break;
 	}
 
 	if (success) {
-		std::cout << ": Success\n";
+		std::cout << "Result: Success\n";
 	}
 	else {
-		std::cout << ": Fail\n";
+		std::cout << "Result: Fail\n";
 	}
+
+	switch (type) {
+		case CommandResultType::Success:
+			std::cout << "Reason: Success\n";
+			break;
+
+		case CommandResultType::ParameterValidationFailed:
+			std::cout << "Reason: ParameterValidationFailed\n";
+			break;
+
+		case CommandResultType::CanExecuteFailed:
+			std::cout << "Reason: CanExecuteFailed\n";
+			break;
+
+		case CommandResultType::InterlockFailed:
+			std::cout << "Reason: InterlockFailed\n";
+			break;
+
+		case CommandResultType::CommandExecutionFailed:
+			std::cout << "Reason: CommandExecutionFailed\n";
+			break;
+
+		case CommandResultType::PostValidationFailed:
+			std::cout << "Reason: PostValidationFailed\n";
+			break;
+	}	
 }
