@@ -22,113 +22,169 @@ void EquipmentController::RunCommand() {
 							case CommandType::Initialize:
 							{
 								bool isSuccess = Initialize();
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}									
 								}												
 								break;
 							}
 							case CommandType::SetRecipe:
 							{
 								bool isSuccess = SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
 								}
 								break;
 							}
 							case CommandType::CompleteInitialization:
 							{
 								bool isSuccess = CompleteInitialization();
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
 								}
 								break;
 							}
 							case CommandType::LoadWafer:
 							{
 								bool isSuccess = LoadWafer(command.GetCommandWaferId());
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
 								}
 								break;
 							}
 							case CommandType::Start:
 							{
 								bool isSuccess = Start();
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
 								}
 								break;
 							}
 							case CommandType::Complete:
 							{
 								bool isSuccess = Complete();
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
 								}
 								break;
 							}
 							case CommandType::RaiseError:
 							{
 								bool isSuccess = RaiseError();
-								if (!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
+									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
 								}
 								break;
 							}
 							case CommandType::Reset:
 							{
 								bool isSuccess = Reset();
-								if(!isSuccess || !PostValidation()) {
+								if (!isSuccess) {
 									failedCommandQueue.push(command);
 									EventLog eventlog(command.GetCommandType(), false);
 									logger.AddEventLog(eventlog);
 								}
 								else {
-									EventLog eventlog(command.GetCommandType(), true);
-									logger.AddEventLog(eventlog);
+									if (!PostValidation()) {
+										failedCommandQueue.push(command);
+										EventLog eventlog(command.GetCommandType(), false);
+										logger.AddEventLog(eventlog);
 									}
+									else {
+										EventLog eventlog(command.GetCommandType(), true);
+										logger.AddEventLog(eventlog);
+									}
+								}
 								break;
 							}
 							case CommandType::PrintState:
