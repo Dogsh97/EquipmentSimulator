@@ -62,11 +62,11 @@ int main()
 
 
     // ==================================================
-    // Test 4. Command Execution Failed
+    // Test 4. CanExecute Failed (RECIPE_NOT_SET)
     // ==================================================
 
     {
-        std::cout << "\n===== Test 4 : Command Execution Failed =====\n";
+        std::cout << "\n===== Test 4 : CanExecute Failed (RECIPE_NOT_SET) =====\n";
 
         EquipmentController equipment;
 
@@ -82,11 +82,11 @@ int main()
 
 
     // ==================================================
-    // Test 5. Interlock Failed
+    // Test 5. Process Already Running
     // ==================================================
 
     {
-        std::cout << "\n===== Test 5 : Interlock Failed =====\n";
+        std::cout << "\n===== Test 5 : Process Already Running =====\n";
 
         EquipmentController equipment;
 

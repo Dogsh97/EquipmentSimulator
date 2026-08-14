@@ -33,8 +33,8 @@ private:
 	bool CommandParameterValidation(Command command);
 	bool InterlockValidation(Command command);
 	bool PostValidation(Command command);
-	bool ExecuteCommand(Command command);
-	void CommandResult(Command command);
+	void ExecuteCommand(Command command);
+	void ProcessCommandResult(Command command);
 	void AddEventLog(Command command, bool success, CommandResultType type);
 
 public:
@@ -44,15 +44,15 @@ public:
 	void RunCommand();
 	void PrintFailedCommands();
 	void RetryFailedCommands();
-	bool Initialize();
-	bool SetRecipe(int id, float time, float temperature);
-	bool CompleteInitialization();
-	bool LoadWafer(int id);
-	bool Start();
-	bool Complete();
-	bool RaiseError();
-	bool Reset();
-	bool PrintState();
+	void Initialize();
+	void SetRecipe(int id, float time, float temperature);
+	void CompleteInitialization();
+	void LoadWafer(int id);
+	void Start();
+	void Complete();
+	void RaiseError();
+	void Reset();
+	void PrintState();
 	void PrintEventLogs();
 	void PrintAlarmHistory();		
 };
