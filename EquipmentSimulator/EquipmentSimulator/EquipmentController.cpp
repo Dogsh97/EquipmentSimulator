@@ -33,8 +33,9 @@ void EquipmentController::AddEventLog(Command command, bool success, CommandResu
 	logger.AddEventLog(eventlog);
 }
 
-bool EquipmentController::ExecuteCommand(Command command) {
-	switch (command.GetCommandType()) {
+bool EquipmentController::ExecuteCommand(Command command){
+	CommandType commandType = command.GetCommandType();
+	switch (commandType) {
 		case CommandType::Initialize:
 		{
 			return Initialize();
@@ -71,8 +72,8 @@ bool EquipmentController::ExecuteCommand(Command command) {
 		{
 			return PrintState();
 		}
-
-		return false;
+		defalt:
+			return false;
 	}	
 }
 void EquipmentController::RunCommand() {
