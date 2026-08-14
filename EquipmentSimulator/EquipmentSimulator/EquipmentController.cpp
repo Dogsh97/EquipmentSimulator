@@ -3,8 +3,7 @@
 #include <string>
 
 EquipmentController::EquipmentController()
-	: currentState(EquipmentState::IDLE),
-	command(CommandType::None)
+	: currentState(EquipmentState::IDLE)
 {
 }
 
@@ -20,7 +19,7 @@ void EquipmentController::CommandResult(Command command) {
 		return;
 	}
 
-	if (!PostValidation()) {
+	if (!PostValidation(command)) {
 		failedCommandQueue.push(command);
 		AddEventLog(command, false, CommandResultType::PostValidationFailed);
 		return;
@@ -78,27 +77,27 @@ bool EquipmentController::ExecuteCommand(Command command) {
 }
 void EquipmentController::RunCommand() {
 	while(commandQueue.CommandDetected()) {
-		command = commandQueue.GetCommand();
+		Command currentCommand = commandQueue.GetCommand();
 
-		if (!CommandParameterValidation()) {
-			AddEventLog(command, false, CommandResultType::ParameterValidationFailed);
+		if (!CommandParameterValidation(currentCommand)) {
+			AddEventLog(currentCommand, false, CommandResultType::ParameterValidationFailed);
 			commandQueue.PopCommand();
 			continue;
 		}
 
-		if (!CanExecute(currentState)) {
-			AddEventLog(command, false, CommandResultType::CanExecuteFailed);
+		if (!CanExecute(currentCommand, currentState)) {
+			AddEventLog(currentCommand, false, CommandResultType::CanExecuteFailed);
 			commandQueue.PopCommand();
 			continue;
 		}
 
-		if (!InterlockValidation()) {
-			AddEventLog(command, false, CommandResultType::InterlockFailed);
+		if (!InterlockValidation(currentCommand)) {
+			AddEventLog(currentCommand, false, CommandResultType::InterlockFailed);
 			commandQueue.PopCommand();
 			continue;
 		}
 
-		CommandResult(command);
+		CommandResult(currentCommand);
 
 		commandQueue.PopCommand();		
 	}
@@ -127,8 +126,9 @@ void EquipmentController::RetryFailedCommands() {
 		RunCommand();
 }
 
-bool EquipmentController::CanExecute(EquipmentState state) {
-	switch (command.GetCommandType()) {
+bool EquipmentController::CanExecute(Command command, EquipmentState state) {
+	CommandType commandType = command.GetCommandType();
+	switch (commandType) {
 		case CommandType::Initialize:
 			if (state == EquipmentState::IDLE) {
 				return true;
@@ -191,8 +191,10 @@ bool EquipmentController::CanExecute(EquipmentState state) {
 	return false;
 }
 
-bool EquipmentController::CommandParameterValidation() {
-	switch (command.GetCommandType()) {
+bool EquipmentController::CommandParameterValidation(Command command) {
+	CommandType commandType = command.GetCommandType();
+
+	switch (commandType) {
 	case CommandType::SetRecipe:
 		if (command.GetCommandRecipeId() <= 0) {
 			return false;
@@ -211,8 +213,10 @@ bool EquipmentController::CommandParameterValidation() {
 	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
 }
 
-bool EquipmentController::InterlockValidation() {
-	switch (command.GetCommandType()) {
+bool EquipmentController::InterlockValidation(Command command) {
+	CommandType commandType = command.GetCommandType();
+
+	switch (commandType) {
 		case CommandType::Start:
 			if (wafer.GetWaferState() != WaferState::LOADED) {
 				return false;
@@ -263,8 +267,9 @@ bool EquipmentController::InterlockValidation() {
 	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
 }
 
-bool EquipmentController::PostValidation() {
-	switch (command.GetCommandType()) {
+bool EquipmentController::PostValidation(Command command) {
+	CommandType commandType = command.GetCommandType();
+	switch (commandType) {
 		case CommandType::Initialize:
 			if (currentState == EquipmentState::INITIALIZING) {
 				return true;

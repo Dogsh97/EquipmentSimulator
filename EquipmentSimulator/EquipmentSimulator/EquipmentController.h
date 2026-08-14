@@ -26,16 +26,16 @@ private:
 	AlarmManager alarmManager;
 	Logger logger;
 	Recipe recipe;
-	Command command;
 	CommandQueue commandQueue;
 	std::queue<Command> failedCommandQueue;
 	const int RetryCountMax = 3;
-	bool CanExecute(EquipmentState state);
-	bool CommandParameterValidation();
-	bool InterlockValidation();
-	bool PostValidation();
+	bool CanExecute(Command command, EquipmentState state);
+	bool CommandParameterValidation(Command command);
+	bool InterlockValidation(Command command);
+	bool PostValidation(Command command);
 	bool ExecuteCommand(Command command);
 	void CommandResult(Command command);
+	void AddEventLog(Command command, bool success, CommandResultType type);
 
 public:
 	EquipmentController();
@@ -52,7 +52,6 @@ public:
 	bool Complete();
 	bool RaiseError();
 	bool Reset();
-	void AddEventLog(Command command, bool success, CommandResultType type);
 	bool PrintState();
 	void PrintEventLogs();
 	void PrintAlarmHistory();		
