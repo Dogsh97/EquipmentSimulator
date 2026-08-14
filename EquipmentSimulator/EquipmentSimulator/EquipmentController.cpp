@@ -11,14 +11,9 @@ void EquipmentController::MakeCommand(Command command) {
 	commandQueue.PushCommand(command);
 }
 
-void EquipmentController::CommandResult(Command command) {
-	bool isSuccess = ExecuteCommand(command);
-	if (!isSuccess) {
-		failedCommandQueue.push(command);
-		AddEventLog(command, false, CommandResultType::CommandExecutionFailed);
-		return;
-	}
-
+void EquipmentController::ProcessCommandResult(Command command) {
+	ExecuteCommand(command);
+	
 	if (!PostValidation(command)) {
 		failedCommandQueue.push(command);
 		AddEventLog(command, false, CommandResultType::PostValidationFailed);
@@ -33,47 +28,55 @@ void EquipmentController::AddEventLog(Command command, bool success, CommandResu
 	logger.AddEventLog(eventlog);
 }
 
-bool EquipmentController::ExecuteCommand(Command command){
+void EquipmentController::ExecuteCommand(Command command){
 	CommandType commandType = command.GetCommandType();
+
 	switch (commandType) {
 		case CommandType::Initialize:
 		{
-			return Initialize();
+			 Initialize();
+			 break;
 		}
 		case CommandType::SetRecipe:
 		{
-			return SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+			SetRecipe(command.GetCommandRecipeId(), command.GetCommandProcessTime(), command.GetCommandTemperature());
+			break;
 		}
 		case CommandType::CompleteInitialization:
 		{
-			return CompleteInitialization();
+			CompleteInitialization();
+			break;
 		}
 		case CommandType::LoadWafer:
 		{
-			return LoadWafer(command.GetCommandWaferId());
+			LoadWafer(command.GetCommandWaferId());
+			break;
 		}
 		case CommandType::Start:
 		{
-			return Start();
+			Start();
+			break;
 		}
 		case CommandType::Complete:
 		{
-			return Complete();
+			Complete();
+			break;
 		}
 		case CommandType::RaiseError:
 		{
-			return RaiseError();
+			RaiseError();
+			break;
 		}
 		case CommandType::Reset:
 		{
-			return Reset();
+			Reset();
+			break;
 		}
 		case CommandType::PrintState:
 		{
-			return PrintState();
+			PrintState();
+			break;
 		}
-		defalt:
-			return false;
 	}	
 }
 void EquipmentController::RunCommand() {
@@ -98,7 +101,7 @@ void EquipmentController::RunCommand() {
 			continue;
 		}
 
-		CommandResult(currentCommand);
+		ProcessCommandResult(currentCommand);
 
 		commandQueue.PopCommand();		
 	}
@@ -129,6 +132,7 @@ void EquipmentController::RetryFailedCommands() {
 
 bool EquipmentController::CanExecute(Command command, EquipmentState state) {
 	CommandType commandType = command.GetCommandType();
+
 	switch (commandType) {
 		case CommandType::Initialize:
 			if (state == EquipmentState::IDLE) {
@@ -156,15 +160,36 @@ bool EquipmentController::CanExecute(Command command, EquipmentState state) {
 				return true;
 			}
 			else {
+				alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
+				alarmManager.PrintAlarm();
 				return false;
 			}
 		case CommandType::Start:
-			if (state == EquipmentState::Loading) {
-				return true;
-			}
-			else {
+			if (state == EquipmentState::RUNNING) {
+				alarmManager.RaiseAlarm(AlarmCode::PROCESS_ALREADY_RUNNING);
 				return false;
 			}
+
+			if (state != EquipmentState::Loading) {
+				alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
+				alarmManager.PrintAlarm();
+				return false;
+			}
+
+			if (wafer.GetWaferState() != WaferState::LOADED)
+			{
+				alarmManager.RaiseAlarm(AlarmCode::WAFER_NOT_DETECTED);
+				return false;
+			}
+			
+			if (!recipe.IsSetting())
+			{
+				alarmManager.RaiseAlarm(AlarmCode::RECIPE_NOT_SET);
+				alarmManager.PrintAlarm();
+				return false;
+			}
+			return true;
+
 		case CommandType::Complete:
 			if (state == EquipmentState::RUNNING) {
 				return true;
@@ -188,8 +213,11 @@ bool EquipmentController::CanExecute(Command command, EquipmentState state) {
 			}
 		case CommandType::PrintState:
 			return true;
+
+		default:
+			return false;
 	}
-	return false;
+	
 }
 
 bool EquipmentController::CommandParameterValidation(Command command) {
@@ -200,7 +228,13 @@ bool EquipmentController::CommandParameterValidation(Command command) {
 		if (command.GetCommandRecipeId() <= 0) {
 			return false;
 		}
+		if (!recipe.IsValid(command.GetCommandProcessTime(), command.GetCommandTemperature())) {
+			logger.Log("Recipe is not Valid");
+			return false;
+		}
 		return true;
+
+		
 
 	case CommandType::LoadWafer:
 		if (command.GetCommandWaferId() <= 0) {
@@ -219,13 +253,10 @@ bool EquipmentController::InterlockValidation(Command command) {
 
 	switch (commandType) {
 		case CommandType::Start:
-			if (wafer.GetWaferState() != WaferState::LOADED) {
+			if(!sensor.IsDetected()){
 				return false;
 			}
-			if(sensor.IsDetected() == false){
-				return false;
-			}
-			if (alarmManager.HasAlarm() == true) {
+			if (alarmManager.HasAlarm()) {
 				return false;
 			}
 			return true;
@@ -234,32 +265,46 @@ bool EquipmentController::InterlockValidation(Command command) {
 			if (wafer.GetWaferState() != WaferState::PROCESSING) {
 				return false;
 			}
-			if (sensor.IsDetected() == false) {
+			if (!sensor.IsDetected()) {
 				return false;
 			}
-			if (alarmManager.HasAlarm() == true) {
+			if (alarmManager.HasAlarm()) {
 				return false;
 			}
 			return true;
+
+		case CommandType::LoadWafer:
+			if (wafer.GetWaferState() != WaferState::EMPTY)
+				return false;
+
+			if (sensor.IsDetected())
+				return false;
+
+			if (alarmManager.HasAlarm())
+				return false;
+
+			return true;
+
 		case CommandType::RaiseError:
 			if (wafer.GetWaferState() != WaferState::PROCESSING) {
 				return false;
 			}
-			if (sensor.IsDetected() == false) {
+			if (!sensor.IsDetected()) {
 				return false;
 			}
-			if (alarmManager.HasAlarm() == true) {
+			if (alarmManager.HasAlarm()) {
 				return false;
 			}
 			return true;
+
 		case CommandType::Reset:
 			if (wafer.GetWaferState() != WaferState::PROCESSING) {
 				return false;
 			}
-			if (sensor.IsDetected() == false) {
+			if (!sensor.IsDetected()) {
 				return false;
 			}
-			if (alarmManager.HasAlarm() == false) {
+			if (!alarmManager.HasAlarm()) {
 				return false;
 			}
 			return true;
@@ -286,14 +331,14 @@ bool EquipmentController::PostValidation(Command command) {
 				return false;
 			}
 		case CommandType::SetRecipe:
-			if (recipe.IsSetting() == true) {
+			if (recipe.IsSetting()) {
 				return true;
 			}
 			else {
 				return false;
 			}
 		case CommandType::LoadWafer:
-			if (currentState == EquipmentState::Loading && wafer.GetWaferState() == WaferState::LOADED && sensor.IsDetected() == true){
+			if (currentState == EquipmentState::Loading && wafer.GetWaferState() == WaferState::LOADED && sensor.IsDetected()){
 				return true;
 			}
 			else {
@@ -307,21 +352,21 @@ bool EquipmentController::PostValidation(Command command) {
 				return false;
 			}
 		case CommandType::Complete:
-			if (currentState == EquipmentState::READY && wafer.GetWaferState() == WaferState::EMPTY && sensor.IsDetected() == false) {
+			if (currentState == EquipmentState::READY && wafer.GetWaferState() == WaferState::EMPTY && !sensor.IsDetected()) {
 				return true;
 			}
 			else {
 				return false;
 			}
 		case CommandType::Reset:
-			if (currentState == EquipmentState::READY &&  alarmManager.HasAlarm() == false) {
+			if (currentState == EquipmentState::READY && wafer.GetWaferState() == WaferState::EMPTY && !sensor.IsDetected() && !alarmManager.HasAlarm()) {
 				return true;
 			}
 			else {
 				return false;
 			}
 		case CommandType::RaiseError:
-			if (currentState == EquipmentState::ERROR &&  alarmManager.HasAlarm() == true) {
+			if (currentState == EquipmentState::ERROR &&  alarmManager.HasAlarm()) {
 				return true;
 			}
 			else {
@@ -333,134 +378,60 @@ bool EquipmentController::PostValidation(Command command) {
 	return false;
 }
 
-bool EquipmentController::Initialize() {
-	if (currentState == EquipmentState::IDLE) {
+void EquipmentController::Initialize() {
 		currentState = EquipmentState::INITIALIZING;
 		logger.Log("INITIALIZE");
-		return true;
-	}
-	else {
-		std::cout << "[ERROR] Initialize command rejected.\n";
-		return false;
-	}
 }
 
-bool EquipmentController::SetRecipe(int id, float time, float temperature) {	
-	if(!recipe.IsValid(time, temperature)) {
-		logger.Log("Recipe is not Valid");
-		return false;
-	}
-	else {
+void EquipmentController::SetRecipe(int id, float time, float temperature) {
 		recipe.SetRecipe(id, time, temperature);
 		logger.Log("SetRecipe");
-		return true;
-	}	
 }
 
-bool EquipmentController::CompleteInitialization() {
-	if (currentState == EquipmentState::INITIALIZING) {
+void EquipmentController::CompleteInitialization() {
 		currentState = EquipmentState::READY;
 		logger.Log("CompleteInitialization");
-		return true;
-		
-	}
-	else {
-		std::cout << "[ERROR] CompleteInitialization command rejected.\n";
-		return false;
-	}
 }
 
-bool EquipmentController::LoadWafer(int id) {
-	if (currentState == EquipmentState::READY) {
+void EquipmentController::LoadWafer(int id) {
 		wafer.Load(id);
 		sensor.DetectWafer();
 		currentState = EquipmentState::Loading;
 		alarmManager.ClearAlarm();
 		logger.Log("LoadWafer id :" + std::to_string(id));
-		return true;
-	}
-	else {
-		std::cout << "[ERROR] LoadWafer command rejected.\n";
-		alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
-		alarmManager.PrintAlarm();
-		return false;
-	}
 }
 
-bool EquipmentController::Start() {
-	if (sensor.IsDetected()) {
-		if (currentState == EquipmentState::Loading) {
-			if (recipe.IsSetting()) {
-				currentState = EquipmentState::RUNNING;
-				wafer.StartProcessing();
-				alarmManager.ClearAlarm();
-				logger.Log("Start");
-				return true;
-			}
-			else {
-				std::cout << "[ERROR] Recipe Not Setting.\n";
-				alarmManager.RaiseAlarm(AlarmCode::RECIPE_NOT_SET);
-				alarmManager.PrintAlarm();
-				return false;
-			}
-		}
-		else {
-			std::cout << "[ERROR] Start command rejected.\n";
-			alarmManager.RaiseAlarm(AlarmCode::EQUIPMENT_NOT_READY);
-			alarmManager.PrintAlarm();
-			return false;
-		}
-	}
-	else {
-		alarmManager.RaiseAlarm(AlarmCode::WAFER_NOT_DETECTED);
-		alarmManager.PrintAlarm();
-		return false;
-	}
+void EquipmentController::Start() {
+	 	currentState = EquipmentState::RUNNING;
+		wafer.StartProcessing();
+		alarmManager.ClearAlarm();
+		logger.Log("Start");
 }
 
-bool EquipmentController::Complete() {
-	if (currentState == EquipmentState::RUNNING) {
+void EquipmentController::Complete() {
 		currentState = EquipmentState::READY;
 		wafer.CompleteProcess();
 		sensor.RemoveWafer();
 		wafer.ResetProcess();
 		logger.Log("Complete");
-		return true;
-	}
-	else {
-		std::cout << "[ERROR] Complete command rejected.\n";
-		return false;
-	}
 }
 
-bool EquipmentController::RaiseError() {
-	if (currentState == EquipmentState::RUNNING) {
+void EquipmentController::RaiseError() {
 		currentState = EquipmentState::ERROR;
 		alarmManager.RaiseAlarm(AlarmCode::PROCESS_ALREADY_RUNNING);
 		alarmManager.PrintAlarm();
 		logger.Log("RaiseError");
-		return true;
-	}
-	else {
-		std::cout << "[ERROR] RaiseError command rejected.\n";
-		return false;
-	}
 }
 
-bool EquipmentController::Reset() {
-	if (currentState == EquipmentState::ERROR) {
-		currentState = EquipmentState::READY;
-		logger.Log("Reset");
+void EquipmentController::Reset() {
+		currentState = EquipmentState::READY;		
+		wafer.ResetProcess();
+		sensor.RemoveWafer();
 		alarmManager.ClearAlarm();
-		return true;
-	}
-	else {
-		std::cout << "[ERROR] Reset command rejected.\n";
-		return false;
-	}
+		logger.Log("Reset");
 }
 
-bool EquipmentController::PrintState() {
+void EquipmentController::PrintState() {
 	switch (currentState) {
 		case EquipmentState::IDLE:
 			wafer.PrintInfo();
@@ -468,42 +439,42 @@ bool EquipmentController::PrintState() {
 			alarmManager.PrintAlarm();
 			logger.PrintLog();
 			std::cout << "IDLE\n";
-			return true;
+			break;
 		case EquipmentState::INITIALIZING:
 			wafer.PrintInfo();
 			sensor.PrintStatus();
 			alarmManager.PrintAlarm();
 			logger.PrintLog();
 			std::cout << "INITIALIZING\n";
-			return true;
+			break;
 		case EquipmentState::Loading:
 			wafer.PrintInfo();
 			sensor.PrintStatus();
 			alarmManager.PrintAlarm();
 			logger.PrintLog();
 			std::cout << "Loading\n";
-			return true;
+			break;
 		case EquipmentState::READY:
 			wafer.PrintInfo();
 			sensor.PrintStatus();
 			alarmManager.PrintAlarm();
 			logger.PrintLog();
 			std::cout << "READY\n";
-			return true;
+			break;
 		case EquipmentState::RUNNING :
 			wafer.PrintInfo();
 			sensor.PrintStatus();
 			alarmManager.PrintAlarm();
 			logger.PrintLog();
-			std::cout << "RUNNING\n";
-			return true;
+			std::cout << "RUNNING\n";	
+			break;
 		case EquipmentState::ERROR:
 			wafer.PrintInfo();
 			sensor.PrintStatus();
 			alarmManager.PrintAlarm();
 			logger.PrintLog();
 			std::cout << "ERROR\n";
-			return true;
+			break;
 	}
 }
 
