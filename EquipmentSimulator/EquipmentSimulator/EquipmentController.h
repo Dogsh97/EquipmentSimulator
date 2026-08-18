@@ -54,5 +54,7 @@ public:
 	void Reset();
 	void PrintState();
 	void PrintEventLogs();
+	void ResetEventLogs();
 	void PrintAlarmHistory();		
+	void TestAddFailedCommand(Command command);
 };
