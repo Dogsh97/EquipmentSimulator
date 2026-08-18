@@ -490,7 +490,7 @@ void  EquipmentController::ResetEventLogs() {
 void EquipmentController::PrintAlarmHistory() {
 	alarmManager.PrintAlarmHistory();
 }
- /*
+ 
 void EquipmentController::TestAddFailedCommand(Command command) {
 	failedCommandQueue.push(command);
-}*/
+}

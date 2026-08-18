@@ -5,61 +5,55 @@ int main()
 {
     EquipmentController equipment;
 
-    std::cout << "\n===== Test 1 : CanExecute Failed =====\n";
+    std::cout << "\n===== Test 1 : Normal Flow =====\n";
 
-    equipment.MakeCommand(Command(CommandType::CompleteInitialization));
-    equipment.RunCommand();
+    {
+        EquipmentController equipment;
 
-    equipment.PrintFailedCommands();
-    equipment.PrintEventLogs();
-    equipment.ResetEventLogs();
+        equipment.MakeCommand(Command(CommandType::Initialize));
+        equipment.MakeCommand(Command(CommandType::CompleteInitialization));
+        equipment.MakeCommand(Command(CommandType::SetRecipe, 1, 1, 1));
+        equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
+        equipment.MakeCommand(Command(CommandType::Start));
 
+        equipment.RunCommand();
 
-    std::cout << "\n===== Test 2 : Normal Flow =====\n";
-
-    equipment.MakeCommand(Command(CommandType::Initialize));
-    equipment.MakeCommand(Command(CommandType::CompleteInitialization));
-    equipment.MakeCommand(Command(CommandType::SetRecipe,1,1,1));
-    equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
-    equipment.MakeCommand(Command(CommandType::Start));
-
-    equipment.RunCommand();
-
-    equipment.PrintFailedCommands();
-    equipment.PrintEventLogs();
-    equipment.ResetEventLogs();
+        equipment.PrintFailedCommands();
+        equipment.PrintEventLogs();
+    }
 
 
-    std::cout << "\n===== Test 3 : Retry Failed Command =====\n";
+    std::cout << "\n===== Test 2 : Validation Failed =====\n";
 
-    equipment.MakeCommand(Command(CommandType::Complete));
-    equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
-    equipment.RunCommand();
+    {
+        EquipmentController equipment;
 
-    //equipment.TestAddFailedCommand(Command(CommandType::Start));
+        equipment.MakeCommand(Command(CommandType::CompleteInitialization));
 
-    equipment.PrintFailedCommands();
+        equipment.RunCommand();
 
-    equipment.RetryFailedCommands();
+        equipment.PrintFailedCommands();
+        equipment.PrintEventLogs();
+    }
 
-    equipment.PrintFailedCommands();
-    equipment.PrintEventLogs();
-    equipment.ResetEventLogs();
 
-    std::cout << "\n===== Test 4 : Retry Failed =====\n";
+    std::cout << "\n===== Test 3 : Retry Failed =====\n";
 
-    equipment.MakeCommand(Command(CommandType::Start));
-    equipment.RunCommand();
+    {
+        EquipmentController equipment;
 
-    //equipment.TestAddFailedCommand(Command(CommandType::Start));
+        equipment.TestAddFailedCommand(Command(CommandType::Start));
 
-    equipment.PrintFailedCommands();
+        std::cout << "\n--- Before Retry ---\n";
+        equipment.PrintFailedCommands();
 
-    equipment.RetryFailedCommands();
+        equipment.RetryFailedCommands();
 
-    equipment.PrintFailedCommands();
-    equipment.PrintEventLogs();
-    equipment.ResetEventLogs();
+        std::cout << "\n--- After Retry ---\n";
+        equipment.PrintFailedCommands();
+
+        equipment.PrintEventLogs();
+    }
 
     return 0;
 
