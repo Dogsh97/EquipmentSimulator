@@ -111,7 +111,7 @@ void EquipmentController::PrintFailedCommands() {
 	std::queue<Command> temp;
 	temp = failedCommandQueue;
 	while (!temp.empty()) {
-		std::cout << "Command:";
+		std::cout << "Failed ";
 		temp.front().PrintCommand();
 		std::cout << "\n";
 		temp.pop();
@@ -123,6 +123,7 @@ void EquipmentController::RetryFailedCommands() {
 			Command temp(failedCommandQueue.front());
 			if (temp.GetRetryCount() < RetryCountMax) {
 				temp.IncreaseRetryCount();
+				std::cout << "RetryCount : " << temp.GetRetryCount() << "\n";
 				commandQueue.PushCommand(temp);
 			}
 			failedCommandQueue.pop();
@@ -482,6 +483,14 @@ void EquipmentController::PrintEventLogs() {
 	logger.PrintEventLogs();
 }
 
+void  EquipmentController::ResetEventLogs() {
+	logger.ResetEventLogs();
+}
+
 void EquipmentController::PrintAlarmHistory() {
 	alarmManager.PrintAlarmHistory();
 }
+ /*
+void EquipmentController::TestAddFailedCommand(Command command) {
+	failedCommandQueue.push(command);
+}*/

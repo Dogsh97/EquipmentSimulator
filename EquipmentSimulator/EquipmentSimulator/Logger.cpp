@@ -24,3 +24,7 @@ void Logger::PrintEventLogs() {
 		eventLogs[i].Print();
 	}
 }
+
+void Logger::ResetEventLogs() {
+	eventLogs.clear();
+}

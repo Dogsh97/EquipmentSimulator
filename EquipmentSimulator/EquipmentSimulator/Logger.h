@@ -15,4 +15,5 @@ class Logger {
 		void PrintLog() const;
 		void AddEventLog(EventLog eventlog);
 		void PrintEventLogs();
+		void ResetEventLogs();
 };
