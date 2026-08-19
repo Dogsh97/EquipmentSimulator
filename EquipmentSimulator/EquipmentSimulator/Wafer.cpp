@@ -35,7 +35,7 @@ void Wafer::CompleteProcess() {
 }
 
 void Wafer::ResetProcess() {
-	if (state == WaferState::COMPLETED) {
+	if (state == WaferState::PROCESSING || state == WaferState::COMPLETED) {
 		state = WaferState::EMPTY;
 	}
 	else {

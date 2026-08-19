@@ -52,6 +52,8 @@ public:
 	void Complete();
 	void RaiseError();
 	void Reset();
+	bool RaiseAlarm(AlarmCode code);
+	void PrintEquipmentInfo();
 	void PrintState();
 	void PrintEventLogs();
 	void ResetEventLogs();

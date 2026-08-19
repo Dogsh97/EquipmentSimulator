@@ -18,7 +18,9 @@ bool EventLog::IsSuccess() {
 }
 
 void EventLog::Print() {
+	std::cout << "Command : ";
 	switch (commandType) {
+
 	case CommandType::None:
 		std::cout << "None\n";
 		break;
@@ -61,35 +63,34 @@ void EventLog::Print() {
 	}
 
 	if (success) {
-		std::cout << "Result: Success\n";
+		std::cout << "Result : Success\n";
 	}
 	else {
-		std::cout << "Result: Fail\n";
+		std::cout << "Result : Fail\n";
+		std::cout << "Reason : ";
 	}
 
-	switch (type) {
-		case CommandResultType::Success:
-			std::cout << "Reason: Success\n";
-			break;
+	
 
+	switch (type) {
 		case CommandResultType::ParameterValidationFailed:
-			std::cout << "Reason: ParameterValidationFailed\n";
+			std::cout << "ParameterValidationFailed\n";
 			break;
 
 		case CommandResultType::CanExecuteFailed:
-			std::cout << "Reason: CanExecuteFailed\n";
+			std::cout << "CanExecuteFailed\n";
 			break;
 
 		case CommandResultType::InterlockFailed:
-			std::cout << "Reason: InterlockFailed\n";
+			std::cout << "InterlockFailed\n";
 			break;
 
 		case CommandResultType::CommandExecutionFailed:
-			std::cout << "Reason: CommandExecutionFailed\n";
+			std::cout << "CommandExecutionFailed\n";
 			break;
 
 		case CommandResultType::PostValidationFailed:
-			std::cout << "Reason: PostValidationFailed\n";
+			std::cout << "PostValidationFailed\n";
 			break;
 	}	
 }
