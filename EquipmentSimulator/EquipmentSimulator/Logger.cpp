@@ -10,6 +10,7 @@ void Logger::Log(const std::string& message) {
 }
 
 void Logger::PrintLog() const {
+	std::cout << "=====  Logs =====\n";
 	for (const auto& log : logs) {
 		std::cout << log << '\n';
 	}
@@ -20,7 +21,9 @@ void Logger::AddEventLog(EventLog eventlog) {
 }
 
 void Logger::PrintEventLogs() {
+	std::cout << "===== Event Logs =====\n";
 	for (int i = 0; i < eventLogs.size(); ++i) {
+		std::cout << "[" << i+1 << "]\n";
 		eventLogs[i].Print();
 	}
 }
