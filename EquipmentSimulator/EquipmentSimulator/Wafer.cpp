@@ -43,27 +43,25 @@ void Wafer::ResetProcess() {
 	}
 }
 
-void Wafer::PrintInfo() {
+std::string WaferStateToString(WaferState state) {
 	switch (state) {
 		case WaferState::EMPTY:
-			std::cout << "ID : " << waferId << "\n";
-			std::cout << "State : EMPTY\n";
-			break;
+			return "EMPTY";
 		case WaferState::LOADED:
-			std::cout << "ID : " << waferId << "\n";
-			std::cout << "State : LOADED\n";
-			break;
+			return "LOADED";
 		case WaferState::PROCESSING:
-			std::cout << "ID : " << waferId << "\n";
-			std::cout << "State : PROCESSING\n";
-			break;
+			return "PROCESSING";
 		case WaferState::COMPLETED:
-			std::cout << "ID : " << waferId << "\n";
-			std::cout << "State : COMPLETED\n";
-			break;
-	}
+			return "COMPLETED";
+		}
+	return "UNKNOWN";
+}
+
+void Wafer::PrintInfo() {
+	std::cout << "ID : " << waferId << "\n";
+	std::cout << "State: " << WaferStateToString(state) << "\n";
 }	
 
-WaferState Wafer::GetWaferState() {
-	return state;
+WaferState Wafer::GetWaferState() const {
+	return state; 
 }

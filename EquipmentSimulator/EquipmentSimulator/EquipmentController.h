@@ -8,6 +8,7 @@
 #include "CommandQueue.h"
 #include "EventLog.h"
 #include <queue>
+#include <string>
 
 enum class EquipmentState{
 	IDLE,
@@ -17,6 +18,8 @@ enum class EquipmentState{
 	RUNNING,
 	ERROR
 };
+
+std::string EquipmentStateToString(EquipmentState state);
 
 class EquipmentController {
 private:
@@ -36,6 +39,8 @@ private:
 	void ExecuteCommand(Command command);
 	void ProcessCommandResult(Command command);
 	void AddEventLog(Command command, bool success, CommandResultType type);
+	bool RaiseAlarm(AlarmCode code);
+	void PrintEquipmentInfo();
 
 public:
 	EquipmentController();
@@ -52,11 +57,9 @@ public:
 	void Complete();
 	void RaiseError();
 	void Reset();
-	bool RaiseAlarm(AlarmCode code);
-	void PrintEquipmentInfo();
 	void PrintState();
 	void PrintEventLogs();
 	void ResetEventLogs();
 	void PrintAlarmHistory();		
-	void TestAddFailedCommand(Command command); //테스트 용 멤버 함수
+	/* void TestAddFailedCommand(Command command); //테스트 용 멤버 함수 */
 };

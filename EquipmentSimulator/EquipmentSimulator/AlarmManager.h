@@ -16,5 +16,5 @@ class AlarmManager {
 		bool HasAlarm() const;
 		void PrintAlarm() const;
 		void AddAlarmHistory(AlarmHistory alarmhistory);
-		void PrintAlarmHistory();
+		void PrintAlarmHistory() const;
 };

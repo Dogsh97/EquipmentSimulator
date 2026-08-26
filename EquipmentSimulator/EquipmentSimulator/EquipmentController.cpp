@@ -459,33 +459,30 @@ void EquipmentController::PrintEquipmentInfo() {
 	logger.PrintLog();
 }
 
-void EquipmentController::PrintState() {
-	switch (currentState) {
-		case EquipmentState::IDLE:
-			PrintEquipmentInfo();
-			std::cout << "IDLE\n";
-			break;
-		case EquipmentState::INITIALIZING:
-			PrintEquipmentInfo();
-			std::cout << "INITIALIZING\n";
-			break;
-		case EquipmentState::Loading:
-			PrintEquipmentInfo();
-			std::cout << "Loading\n";
-			break;
-		case EquipmentState::READY:
-			PrintEquipmentInfo();
-			std::cout << "READY\n";
-			break;
-		case EquipmentState::RUNNING :
-			PrintEquipmentInfo();
-			std::cout << "RUNNING\n";	
-			break;
-		case EquipmentState::ERROR:
-			PrintEquipmentInfo();
-			std::cout << "ERROR\n";
-			break;
+std::string EquipmentStateToString(EquipmentState state)
+{
+	switch (state)
+	{
+	case EquipmentState::IDLE:
+		return "IDLE";
+	case EquipmentState::INITIALIZING:
+		return "INITIALIZING";
+	case EquipmentState::Loading:
+		return "Loading";
+	case EquipmentState::READY:
+		return "READY";
+	case EquipmentState::RUNNING:
+		return "RUNNING";
+	case EquipmentState::ERROR:
+		return "ERROR";
 	}
+
+	return "UNKNOWN";
+}
+
+void EquipmentController::PrintState(){ 
+	PrintEquipmentInfo();
+	std::cout << "Equipment State : " << EquipmentStateToString(currentState) << '\n';
 }
 
 void EquipmentController::PrintEventLogs() {
@@ -499,7 +496,9 @@ void  EquipmentController::ResetEventLogs() {
 void EquipmentController::PrintAlarmHistory() {
 	alarmManager.PrintAlarmHistory();
 }
- 
+
+/* 테스트용 코드
 void EquipmentController::TestAddFailedCommand(Command command) {
 	failedCommandQueue.push(command);
 }
+*/

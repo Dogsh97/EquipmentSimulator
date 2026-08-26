@@ -139,6 +139,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AlarmCode.cpp" />
     <ClCompile Include="AlarmManager.cpp" />
     <ClCompile Include="AlarmCode.h" />
     <ClCompile Include="AlarmHistory.cpp" />
