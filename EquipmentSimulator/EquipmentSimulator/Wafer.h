@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 enum class WaferState {
 	EMPTY,
@@ -6,6 +7,8 @@ enum class WaferState {
 	PROCESSING,
 	COMPLETED
 };
+
+std::string WaferStateToString(WaferState state);
 
 class Wafer {
 	private:
@@ -20,5 +23,5 @@ class Wafer {
 		void CompleteProcess();
 		void ResetProcess();
 		void PrintInfo();
-		WaferState GetWaferState();
+		WaferState GetWaferState() const;
 };

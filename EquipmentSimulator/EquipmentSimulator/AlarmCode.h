@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 enum class AlarmCode {
 	NONE,
@@ -8,3 +9,5 @@ enum class AlarmCode {
 	RECIPE_NOT_SET,
 	PROCESS_ALREADY_RUNNING
 };
+
+std::string AlarmCodeToString(AlarmCode code);

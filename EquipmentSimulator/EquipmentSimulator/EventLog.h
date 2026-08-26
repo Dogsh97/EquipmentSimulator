@@ -10,6 +10,8 @@ enum class CommandResultType{
 	PostValidationFailed
 };
 
+std::string CommandResultTypeToString(CommandResultType type);
+
 class EventLog {
 	private:
 		CommandType commandType;
@@ -17,8 +19,8 @@ class EventLog {
 		CommandResultType type;
 	public:
 		EventLog(CommandType commandtype, bool success, CommandResultType type);
-		CommandType GetCommandType();
-		bool IsSuccess();
-		void Print();
+		CommandType GetCommandType() const;
+		bool IsSuccess() const;
+		void Print() const;
 
 };

@@ -51,48 +51,37 @@ float Command::GetCommandTemperature() const {
 	return temperature;
 }
 
-void Command::PrintCommand() const {
-	switch (type) {
-		case CommandType::None:
-			std::cout << "CommandType : None";
-			break;
-
-		case CommandType::Initialize:
-			std::cout << "CommandType : Initialize";
-			break;
-
-		case CommandType::SetRecipe:
-			std::cout << "CommandType : SetRecipe";
-			break;
-
-		case CommandType::CompleteInitialization:
-			std::cout << "CommandType : CompleteInitialization";
-			break;
-
-		case CommandType::LoadWafer:
-			std::cout << "CommandType : LoadWafer";
-			break;
-
-		case CommandType::Start:
-			std::cout << "CommandType : Start";
-			break;
-
-		case CommandType::Complete:
-			std::cout << "CommandType : Complete";
-			break;
-
-		case CommandType::RaiseError:
-			std::cout << "CommandType : RaiseError";
-			break;
-
-		case CommandType::Reset:
-			std::cout << "CommandType : Reset";
-			break;
-
-		case CommandType::PrintState:
-			std::cout << "CommandType : PrintState";
-			break;
+std::string CommandTypeToString(CommandType type)
+{
+	switch (type)
+	{
+	case CommandType::None:
+		return "None";
+	case CommandType::Initialize:
+		return "Initialize";
+	case CommandType::SetRecipe:
+		return "SetRecipe";
+	case CommandType::CompleteInitialization:
+		return "CompleteInitialization";
+	case CommandType::LoadWafer:
+		return "LoadWafer";
+	case CommandType::Start:
+		return "Start";
+	case CommandType::Complete:
+		return "Complete";
+	case CommandType::RaiseError:
+		return "RaiseError";
+	case CommandType::Reset:
+		return "Reset";
+	case CommandType::PrintState:
+		return "PrintState";
 	}
+
+	return "Unknown";
+}
+
+void Command::PrintCommand() const {
+	std::cout << "CommandType : " << CommandTypeToString(type) << "\n";
 }
 
 void Command::IncreaseRetryCount() {
@@ -101,8 +90,4 @@ void Command::IncreaseRetryCount() {
 
 int Command::GetRetryCount() const{
 	return retryCount;
-}
-
-void Command::ResetRetryCount() {
-	retryCount = 0;
 }

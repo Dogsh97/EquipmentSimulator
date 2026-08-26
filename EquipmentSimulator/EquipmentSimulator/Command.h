@@ -13,6 +13,8 @@ enum class CommandType{
 	PrintState
 };
 
+std::string CommandTypeToString(CommandType type);
+
 class Command {
 	private:
 		CommandType type;
@@ -30,9 +32,8 @@ class Command {
 		int GetCommandRecipeId() const;
 		int GetCommandWaferId() const;
 		float GetCommandProcessTime() const;
-		float GetCommandTemperature() const;
+		float GetCommandTemperature() const;		
 		void PrintCommand() const;
 		void IncreaseRetryCount();
 		int GetRetryCount() const;
-		void ResetRetryCount();
 };

@@ -26,24 +26,7 @@ bool AlarmManager::HasAlarm() const {
 
 void AlarmManager::PrintAlarm() const {
 	std::cout << "===== Alarm =====\n";
-	std::cout << "Code : ";
-	switch (currentAlarm) {
-		case AlarmCode::NONE:
-			std::cout << "NONE\n";
-			break;
-		case AlarmCode::EQUIPMENT_NOT_READY:
-			std::cout << "EQUIPMENT_NOT_READY\n";
-			break;
-		case AlarmCode::WAFER_NOT_DETECTED:
-			std::cout << "WAFER_NOT_DETECTED\n";
-			break;
-		case AlarmCode::PROCESS_ALREADY_RUNNING:
-			std::cout << "PROCESS_ALREADY_RUNNING\n";
-			break;
-		case AlarmCode::RECIPE_NOT_SET:
-			std::cout << "RECIPE_NOT_SET\n";
-			break;
-	}
+	std::cout << "Code : " << AlarmCodeToString(currentAlarm) << "\n";
 	
 }
 
@@ -51,7 +34,7 @@ void AlarmManager::AddAlarmHistory(AlarmHistory alarmhistory) {
 	alarmHistories.push_back(alarmhistory);
 }
 
-void AlarmManager::PrintAlarmHistory() {
+void AlarmManager::PrintAlarmHistory() const{
 	for (int i = 0; i < alarmHistories.size(); ++i) {
 		alarmHistories[i].Print();
 	}

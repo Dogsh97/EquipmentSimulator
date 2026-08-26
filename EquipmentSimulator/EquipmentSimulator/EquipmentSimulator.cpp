@@ -3,8 +3,10 @@
 
 int main()
 {
-    EquipmentController equipment;
 
+    // =========================================================
+    // Test 1 : Normal Flow
+    // =========================================================
     std::cout << "\n===== Test 1 : Normal Flow =====\n";
 
     {
@@ -26,8 +28,25 @@ int main()
         equipment.PrintEventLogs();
     }
 
-    
-    std::cout << "\n===== Test 2 : Error Recovery + WAFER_ALREADY =====\n";
+
+    // =========================================================
+    // Test 2 : Error Recovery Flow
+    // Initialize
+    // -> CompleteInitialization
+    // -> SetRecipe
+    // -> LoadWafer
+    // -> Start
+    // -> RaiseError
+    // -> Reset
+    // -> LoadWafer
+    // -> Start
+    // -> Complete
+    //
+    // 기대 결과:
+    // 전체 Command가 Success
+    // Failed Command Queue = Empty
+    // =========================================================
+    std::cout << "\n===== Test 2 : Error Recovery Flow =====\n";
 
     {
         EquipmentController equipment;
@@ -42,8 +61,6 @@ int main()
         equipment.MakeCommand(Command(CommandType::Reset));
 
         equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
-        equipment.MakeCommand(Command(CommandType::LoadWafer, 1));
-
         equipment.MakeCommand(Command(CommandType::Start));
         equipment.MakeCommand(Command(CommandType::Complete));
 
@@ -56,7 +73,15 @@ int main()
         equipment.PrintEventLogs();
     }
 
-   
+
+    // =========================================================
+    // Test 3 : Validation Failed
+    // 초기 상태에서 CompleteInitialization 실행
+    //
+    // 기대 결과:
+    // CanExecuteFailed
+    // Failed Command Queue = Empty
+    // =========================================================
     std::cout << "\n===== Test 3 : Validation Failed =====\n";
 
     {
@@ -75,7 +100,18 @@ int main()
         equipment.PrintEventLogs();
     }
 
-    
+
+    // =========================================================
+    // Test 4 : Retry Failed
+    //
+    // FailedCommandQueue에 Start를 등록하고 Retry
+    //
+    // 기대 결과:
+    // RetryCount 증가
+    // Retry 실행
+    // CanExecuteFailed
+    // Failed Command Queue = Empty
+    // =========================================================
     std::cout << "\n===== Test 4 : Retry Failed =====\n";
 
     {
@@ -96,7 +132,7 @@ int main()
         std::cout << "\n--- Event Logs ---\n";
         equipment.PrintEventLogs();
     }
-    
+
     return 0;
 
 }

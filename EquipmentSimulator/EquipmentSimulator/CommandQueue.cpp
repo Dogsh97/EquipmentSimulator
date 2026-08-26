@@ -34,10 +34,7 @@ void CommandQueue::PrintCommandInfo() const {
 
 void CommandQueue::PopCommand() {
 	if (CommandDetected()) {
-		commandQueue.pop();;
-	}
-	else {
-		std::cout << "Queue is Empty";
+		commandQueue.pop();
 	}
 	
 }
