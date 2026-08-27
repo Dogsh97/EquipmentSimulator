@@ -117,10 +117,6 @@ int main()
     {
         EquipmentController equipment;
 
-        equipment.TestAddFailedCommand(
-            Command(CommandType::Start)
-        );
-
         std::cout << "\n--- Before Retry ---\n";
         equipment.PrintFailedCommands();
 

@@ -11,6 +11,8 @@ void EquipmentController::MakeCommand(Command command) {
 	commandQueue.PushCommand(command);
 }
 
+// Command를 실제로 실행한 뒤 PostValidation을 통해 실행 결과가 기대 상태에 도달했는지 확인한다.
+// PostValidation에 실패한 Command는 FailedCommandQueue에 저장하고 실패 원인을 EventLog에 기록한다.
 void EquipmentController::ProcessCommandResult(Command command) {
 	ExecuteCommand(command);
 	
@@ -28,6 +30,8 @@ void EquipmentController::AddEventLog(Command command, bool success, CommandResu
 	logger.AddEventLog(eventlog);
 }
 
+// CommandType에 따라 실제 장비 동작 함수를 호출한다.
+// Command의 사전 검증과 실행 후 검증은 상위 실행 흐름에서 담당한다.
 void EquipmentController::ExecuteCommand(Command command){
 	CommandType commandType = command.GetCommandType();
 
@@ -79,6 +83,10 @@ void EquipmentController::ExecuteCommand(Command command){
 		}
 	}	
 }
+
+// Command는 Parameter → EquipmentState → Interlock 순으로 사전 검증한다.
+// 모든 사전 검증을 통과한 경우에만 Execute를 수행하고, Execute 이후 PostValidation을 통해 실행 결과가 기대 상태에 도달했는지 확인한다.
+// 사전 검증에 실패한 Command는 EventLog에 실패 원인을 기록한 후 CommandQueue에서 제거한다.
 void EquipmentController::RunCommand() {
 	while(commandQueue.CommandDetected()) {
 		Command currentCommand = commandQueue.GetCommand();
@@ -131,6 +139,9 @@ void EquipmentController::PrintFailedCommands() {
 	}
 }
 
+// FailedCommandQueue의 Command를 Retry 대상으로 다시 등록한다.
+// Retry 기능 횟수를 초과한 Command는 재등록 하지 않는다.
+// Retry 대상 Command는 별도의 실행 로직을 사용하지 않고 기존 RunCommand()를 통해 동일한 Validation 및 Execute Flow를 재사용한다.
 void EquipmentController::RetryFailedCommands() {
 		while (!failedCommandQueue.empty()) {
 			Command temp(failedCommandQueue.front());
@@ -144,6 +155,9 @@ void EquipmentController::RetryFailedCommands() {
 		RunCommand();
 }
 
+// 현재 EquipmentState에서 Command를 실행할 수 있는지 확인한다.
+// 장비 상태가 실행 조건을 만족하지 않는 경우 Command를 실행하지 않는다.
+// 장비 이상 또는 운전 조건 위반으로 판단되는 경우 RaiseAlarm()을 통해 Alarm을 발생 시키고 false를 반환한다.
 bool EquipmentController::CanExecute(Command command, EquipmentState state) {
 	CommandType commandType = command.GetCommandType();
 
@@ -227,6 +241,8 @@ bool EquipmentController::CanExecute(Command command, EquipmentState state) {
 	
 }
 
+// Command 실행에 필요한 입력 파라미터가 유효한지 확인한다.
+// 현재는 SetRecipe와 LoadWafer의 입력값을 검증하며, 별도의 파라미터가 없는 Command는 검증을 통과시킨다.
 bool EquipmentController::CommandParameterValidation(Command command) {
 	CommandType commandType = command.GetCommandType();
 
@@ -251,10 +267,11 @@ bool EquipmentController::CommandParameterValidation(Command command) {
 			return true;
 		}
 	}
-	return true;
-	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
+	return true;	
 }
 
+// Command 실행 직전 Sensor 및 Alarm 상태를 확인하여 장비 운전 조건을 만족하는지 검증한다.
+// 장비 이상 또는 운전 조건 위반으로 판단되는 경우 RaiseAlarm()을 통해 Alarm을 발생시키고 실패를 반환한다.
 bool EquipmentController::InterlockValidation(Command command) {
 	CommandType commandType = command.GetCommandType();
 
@@ -323,9 +340,10 @@ bool EquipmentController::InterlockValidation(Command command) {
 			return true;
 	}
 	return true;
-	//변수가 없는 함수들은 모두 통과되도록 설계(확장된다면 case를 늘리는 방향으로 확장성 설계)
 }
 
+// Execute 이후 장비가 Command 별 기대 상태에 도달했는지 확인한다.
+// EquipmentState, WaferState, Sensor, Alarm 상태를 확인하여 실제 실행 결과가 설계된 상태와 일치하는지 확인한다.
 bool EquipmentController::PostValidation(Command command) {
 	CommandType commandType = command.GetCommandType();
 	switch (commandType) {
@@ -436,6 +454,7 @@ void EquipmentController::RaiseError() {
 		logger.Log("RaiseError");
 }
 
+// ERROR 상태를 READY 상태로 복구하고 Wafer, Sensor, Alarm 상태를 초기 상태로 복원한다.
 void EquipmentController::Reset() {
 		currentState = EquipmentState::READY;		
 		wafer.ResetProcess();
@@ -444,6 +463,7 @@ void EquipmentController::Reset() {
 		logger.Log("Reset");
 }
 
+// 장비 이상 또는 운전 조건 위반 시 Alarm을 발생시키고 사용자에게 즉시 알린 후 Validation 실패를 반환한다.
 bool EquipmentController::RaiseAlarm(AlarmCode code)
 {
 	alarmManager.RaiseAlarm(code);
@@ -452,6 +472,7 @@ bool EquipmentController::RaiseAlarm(AlarmCode code)
 	return false;
 }
 
+//현재 장비의 Wafer, Sensor, Alarm, Log 정보를 출력한다.
 void EquipmentController::PrintEquipmentInfo() {
 	wafer.PrintInfo();
 	sensor.PrintStatus();
@@ -496,9 +517,3 @@ void  EquipmentController::ResetEventLogs() {
 void EquipmentController::PrintAlarmHistory() {
 	alarmManager.PrintAlarmHistory();
 }
-
-/* 테스트용 코드
-void EquipmentController::TestAddFailedCommand(Command command) {
-	failedCommandQueue.push(command);
-}
-*/
