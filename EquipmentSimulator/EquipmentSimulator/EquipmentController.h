@@ -61,5 +61,4 @@ public:
 	void PrintEventLogs();
 	void ResetEventLogs();
 	void PrintAlarmHistory();		
-	/* void TestAddFailedCommand(Command command); //테스트 용 멤버 함수 */
 };
